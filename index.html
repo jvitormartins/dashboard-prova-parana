@@ -18,13 +18,13 @@
         /* Custom Styles */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5; /* New professional, soft background color */
+            background-color: #f0f2f5;
         }
         .tab-button.active {
             border-color: #007BFF;
             color: #007BFF;
             background-color: #e7f3ff;
-            font-weight: 600; /* Make active tab bolder */
+            font-weight: 600;
         }
         .sub-tab-button.active {
             background-color: #007BFF;
@@ -36,7 +36,7 @@
         }
         .sort-icon {
             opacity: 0.5;
-            transition: opacity: 0.2s;
+            transition: opacity 0.2s;
         }
         .sortable:hover .sort-icon {
             opacity: 1;
@@ -45,7 +45,6 @@
             opacity: 1;
             color: #007BFF;
         }
-        /* Custom scrollbar for tables on small screens */
         .table-container::-webkit-scrollbar {
             height: 8px;
         }
@@ -60,7 +59,6 @@
         .table-container::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* Modal styles */
         #delete-modal-overlay {
             transition: opacity 0.3s ease;
         }
@@ -71,23 +69,19 @@
     <!-- ========== Login Section ========== -->
     <div id="login-container" class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div class="bg-white p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-md">
-            <div id="firebase-error-container" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
+             <div id="firebase-error-container" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
                 <p class="font-bold">Erro de Configuração do Firebase</p>
-                <p class="text-sm">As credenciais do Firebase não foram encontradas. Se você estiver rodando o projeto localmente, siga as instruções no código para adicionar sua própria configuração do Firebase.</p>
+                <p class="text-sm">As credenciais do Firebase não foram encontradas ou são inválidas.</p>
             </div>
-            <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-700 mb-6">Prova Paraná 2025</h1>
+            <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-700 mb-6">Acesso ao Dashboard</h1>
             <form id="login-form">
-                <div class="mb-4">
-                    <label for="username" class="block text-gray-600 mb-2 font-medium">Usuário</label>
-                    <input type="text" id="username" name="username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                </div>
                 <div class="mb-6">
                     <label for="password" class="block text-gray-600 mb-2 font-medium">Senha</label>
                     <input type="password" id="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300">Entrar</button>
             </form>
-            <p id="login-error" class="text-red-500 text-center mt-4 font-medium hidden">Usuário ou senha inválidos.</p>
+            <p id="login-error" class="text-red-500 text-center mt-4 font-medium hidden">Senha inválida.</p>
         </div>
     </div>
 
@@ -119,7 +113,7 @@
 
         <!-- Footer -->
         <footer class="bg-white mt-auto py-4 border-t">
-            <p class="text-center text-gray-600 text-sm">Desenvolvido por: J. Vitor Martins</p>
+            <p class="text-center text-gray-600 text-sm">Desenvolvido por: <span class="italic">J. Vitor Martins</span></p>
         </footer>
     </div>
     
@@ -377,6 +371,15 @@
     
     <!-- Firebase SDK -->
     <script type="module">
+        const firebaseConfig = {
+            apiKey: "AIzaSyAL6OdII-3nDZONLy_aeFUs-0_v5e9MhNA",
+            authDomain: "dashboard-prova-parana-7a2c7.firebaseapp.com",
+            projectId: "dashboard-prova-parana-7a2c7",
+            storageBucket: "dashboard-prova-parana-7a2c7.firebasestorage.app",
+            messagingSenderId: "560838925413",
+            appId: "1:560838925413:web:c19a9a5137016e918a7a8c"
+        };
+        
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -385,7 +388,6 @@
         // Global Firebase instances
         let app, auth, db, firestorePath;
         
-        const LOGIN_USERNAME = 'jvitormartins';
         const LOGIN_PASSWORD = 'warta@2025';
 
         // ========== STATE MANAGEMENT ==========
@@ -791,60 +793,60 @@
         // ========== FIREBASE & AUTHENTICATION ==========
         
         async function initializeFirebaseConnection() {
-            let firebaseConfig;
+            let config;
             let appId;
-
-            // This code runs in a special environment (like Gemini) that provides the config
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                firebaseConfig = JSON.parse(__firebase_config);
-                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            } else {
-                // This code runs locally or on GitHub Pages
-                // Your Firebase project configuration is now hardcoded here
-                const userFirebaseConfig = {
-                    apiKey: "AIzaSyAL6OdII-3nDZONLy_aeFUs-0_v5e9MhNA",
-                    authDomain: "dashboard-prova-parana-7a2c7.firebaseapp.com",
-                    projectId: "dashboard-prova-parana-7a2c7",
-                    storageBucket: "dashboard-prova-parana-7a2c7.firebasestorage.app",
-                    messagingSenderId: "560838925413",
-                    appId: "1:560838925413:web:c19a9a5137016e918a7a8c"
-                };
-
-                firebaseConfig = userFirebaseConfig;
-                appId = firebaseConfig.projectId; // Use projectId for local dev
-            }
             
-            // Define the single, consistent path to the data document
+            // This code works in both Gemini/Canvas environment and local/GitHub Pages
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                config = JSON.parse(__firebase_config);
+                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            } else if (typeof firebaseConfig !== 'undefined') {
+                config = firebaseConfig;
+                appId = config.projectId;
+            } else {
+                 const el = document.getElementById('firebase-error-container');
+                 if (el) el.classList.remove('hidden');
+                 console.error("Firebase config not found anywhere.");
+                 return false;
+            }
+
             firestorePath = `artifacts/${appId}/public/data`;
             
             try {
-                // Initialize Firebase
-                app = initializeApp(firebaseConfig);
+                app = initializeApp(config);
                 auth = getAuth(app);
                 db = getFirestore(app);
-
-                // Sign in
+                
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                 if (token) {
                     await signInWithCustomToken(auth, token);
                 } else {
                     await signInAnonymously(auth);
                 }
-                const userId = auth.currentUser.uid;
-                console.log("Firebase Conectado. User ID:", userId);
-
-                // Setup real-time listeners
+                
+                console.log("Firebase Conectado. User ID:", auth.currentUser.uid);
                 setupFirestoreListeners();
+                return true;
 
             } catch (error) {
-                console.error("Erro ao inicializar o Firebase:", error);
-                firebaseErrorContainer.classList.remove('hidden');
-                firebaseErrorContainer.querySelector('p:last-child').textContent = `Falha na conexão: ${error.message}`;
+                console.error("Erro CRÍTICO ao inicializar o Firebase:", error);
+                const errEl = document.getElementById('login-error');
+                const firebaseErrEl = document.getElementById('firebase-error-container');
+                
+                if (firebaseErrEl) {
+                    firebaseErrEl.classList.remove('hidden');
+                    const p = firebaseErrEl.querySelector('p:last-child');
+                    if (p) p.textContent = `Detalhes: ${error.message}`;
+                }
+                if (errEl) {
+                    errEl.textContent = `Falha na conexão com o DB. Verifique as restrições da chave de API.`;
+                    errEl.classList.remove('hidden');
+                }
+                return false;
             }
         }
 
         function setupFirestoreListeners() {
-            // Detach any existing listeners before creating new ones
             state.listeners.forEach(unsubscribe => unsubscribe());
             state.listeners = [];
 
@@ -857,7 +859,6 @@
                 state.appData.edicao2 = allData.edicao2 || { alunos: [], descritores: {} };
                 state.appData.edicao3 = allData.edicao3 || { alunos: [], descritores: {} };
 
-                // Refresh the current view with new data
                 updateView();
             }, (error) => {
                 console.error("Erro no listener do Firestore:", error);
@@ -865,26 +866,30 @@
             state.listeners.push(unsubscribe);
         }
 
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
-            const username = loginForm.username.value;
             const password = loginForm.password.value;
 
-            if (username === LOGIN_USERNAME && password === LOGIN_PASSWORD) {
-                loginContainer.classList.add('hidden');
-                dashboardContainer.classList.remove('hidden');
-                loginError.classList.add('hidden');
-                loginForm.reset();
-                initializeFirebaseConnection().then(() => {
+            if (password === LOGIN_PASSWORD) {
+                const connected = await initializeFirebaseConnection(); // Await the result
+                if (connected) {
+                    loginContainer.classList.add('hidden');
+                    dashboardContainer.classList.remove('hidden');
+                    loginError.classList.add('hidden');
+                    loginForm.reset();
                     initializeDashboard();
-                });
+                } else {
+                    console.error("Login abortado devido a falha na conexão com o Firebase.");
+                    loginError.textContent = "Falha ao conectar com o banco de dados. Verifique o console para detalhes.";
+                    loginError.classList.remove('hidden');
+                }
             } else {
+                loginError.textContent = "Senha inválida.";
                 loginError.classList.remove('hidden');
             }
         }
         
         function handleLogout() {
-            // Don't sign out from Firebase, just return to login screen UI
             dashboardContainer.classList.add('hidden');
             loginContainer.classList.remove('hidden');
         }
@@ -919,23 +924,20 @@
         }
         
         function renderTelaInicialView() {
-             // Check if there's any student data across all editions
             const hasData = state.appData.edicao1.alunos.length > 0 || 
                             state.appData.edicao2.alunos.length > 0 || 
                             state.appData.edicao3.alunos.length > 0;
 
             if (!hasData) {
-                // If no data, show a welcome/instruction message
                 const html = `
                     <div class="bg-white p-8 rounded-lg shadow-sm text-center">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">Bem-vindo ao Dashboard!</h2>
                         <p class="text-gray-600 mb-6">Ainda não há dados para serem analisados na Tela Inicial.</p>
-                        <p class="text-gray-600">Para começar, por favor, vá para uma das abas de edição (ex: <strong>1ª Edição 2025</strong>) e use a sub-aba <strong>"Importar Dados"</strong> para carregar os arquivos das turmas.</p>
+                        <p class="text-gray-600">Para começar, vá para uma das abas de edição (ex: <strong>1ª Edição 2025</strong>) e use a sub-aba <strong>"Importar Dados"</strong> para carregar os arquivos das turmas.</p>
                     </div>
                 `;
                 tabContentContainer.innerHTML = html;
             } else {
-                // If there is data, find the first edition with data to be the default
                 let defaultEdicao = state.geralEdicao;
                 if (state.appData[defaultEdicao].alunos.length === 0) {
                     if (state.appData.edicao1.alunos.length > 0) defaultEdicao = 'edicao1';
@@ -998,7 +1000,7 @@
                         state.turmaRankSort.direction = state.turmaRankSort.direction === 'asc' ? 'desc' : 'asc';
                     } else {
                         state.turmaRankSort.column = column;
-                        state.turmaRankSort.direction = 'desc'; // Default to descending for ranks
+                        state.turmaRankSort.direction = 'desc';
                     }
                     updateTurmaRankingsView();
                 });
