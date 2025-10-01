@@ -384,15 +384,15 @@
             alunoSort: { column: 'nome', direction: 'asc' },
             descritorSort: { column: 'percentual_acerto', direction: 'desc' },
             turmaRankSort: { column: 'geral', direction: 'desc' },
-            geralEdicao: 'edicao2', // Edição padrão para a tela inicial
-            charts: {}, // Armazena instâncias de gráficos para destruí-las depois
-            appData: { // Cache local dos dados do Firestore
+            geralEdicao: 'edicao2', 
+            charts: {}, 
+            appData: { 
                 edicao1: { alunos: [], descritores: {} },
                 edicao2: { alunos: [], descritores: {} },
                 edicao3: { alunos: [], descritores: {} },
             },
-            listeners: [], // Armazena listeners do Firestore para limpeza
-            deleteContext: { edition: null } // Contexto para a exclusão de dados
+            listeners: [], 
+            deleteContext: { edition: null } 
         };
 
         // ========== Seletores de Elementos DOM ==========
@@ -417,13 +417,14 @@
         
         // ========== IMPORTAÇÃO E PARSING DE DADOS ==========
         
+        // *** FUNÇÃO DE NORMALIZAÇÃO CORRIGIDA ***
         function normalizeHeader(header) {
             if (typeof header !== 'string') return '';
+            // Converte para minúsculas, remove acentos e remove TODOS os espaços e hífens.
+            // Ex: "Nome Aluno" -> "nomealuno", "Língua Estrangeira - Inglês" -> "linguaestrangeiraingles"
             return header.toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove acentos
-                .replace(/-/g, ' ') // substitui hífen por espaço
-                .replace(/\s+/g, ' ') // remove espaços múltiplos
-                .trim();
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+                .replace(/[\s-]+/g, ''); 
         }
 
         async function parseFileToJSON(file) {
@@ -474,11 +475,21 @@
         }
         
         function processAlunoData(rawData) {
+            // *** MAPA DE COLUNAS ATUALIZADO PARA CORRESPONDER À NOVA NORMALIZAÇÃO ***
             const columnMap = {
-                'nomealuno': 'nome', 'cgm': 'cgm', 'percacertosaluno': 'individual',
-                'percacertosgeral': 'geral', 'ciencias naturais ef': 'ciencias',
-                'geografia': 'geografia', 'historia': 'historia', 'lingua estrangeira ingles': 'ingles',
-                'lingua portuguesa': 'portugues', 'matematica': 'matematica'
+                'nomealuno': 'nome',
+                'cgm': 'cgm',
+                'percacertosaluno': 'individual',
+                'percacertosgeral': 'geral',
+                'cienciasnaturaisef': 'ciencias',
+                'ciencias': 'ciencias', // Chave curta para flexibilidade
+                'geografia': 'geografia',
+                'historia': 'historia',
+                'linguaestrangeiraingles': 'ingles',
+                'ingles': 'ingles', // Chave curta
+                'linguaportuguesa': 'portugues',
+                'portugues': 'portugues', // Chave curta
+                'matematica': 'matematica'
             };
             const requiredHeaders = ['nomealuno', 'cgm'];
 
@@ -510,12 +521,22 @@
         
         function processAndGroupDescritores(rawData) {
             const columnMap = {
-                'descritor': 'descricao', 'item': 'codigo',
-                'percentualdescr': 'percentual_acerto', 'disciplina': 'disciplina'
+                'descritor': 'descricao', 
+                'item': 'codigo',
+                'percentualdescr': 'percentual_acerto', 
+                'disciplina': 'disciplina'
             };
-            const disciplineNameMap = {
-                'ciencias naturais ef': 'ciencias', 'geografia': 'geografia', 'historia': 'historia',
-                'lingua estrangeira ingles': 'ingles', 'lingua portuguesa': 'portugues', 'matematica': 'matematica'
+            // *** MAPA DE DISCIPLINAS ATUALIZADO ***
+             const disciplineNameMap = {
+                'cienciasnaturaisef': 'ciencias',
+                'ciencias': 'ciencias',
+                'geografia': 'geografia',
+                'historia': 'historia',
+                'linguaestrangeiraingles': 'ingles',
+                'ingles': 'ingles',
+                'linguaportuguesa': 'portugues',
+                'portugues': 'portugues',
+                'matematica': 'matematica'
             };
             const requiredHeaders = ['descritor', 'item', 'percentualdescr', 'disciplina'];
             
@@ -587,15 +608,14 @@
                 const processedData = processAlunoData(rawJsonData);
                 processedData.forEach(aluno => { aluno.turma = turma; });
 
-                // ✅ OTIMIZAÇÃO: Esta é a forma correta de atualizar dados.
-                // Usamos o cache local (state.appData) para montar o novo array de alunos.
+                const docRef = doc(db, firestorePath);
+                
+                await setDoc(docRef, {}, { merge: true });
+
                 const alunosAtuais = state.appData[edition]?.alunos || [];
                 const alunosDeOutrasTurmas = alunosAtuais.filter(a => a.turma !== turma);
                 const alunosAtualizados = [...alunosDeOutrasTurmas, ...processedData];
 
-                const docRef = doc(db, firestorePath);
-                // Usamos `updateDoc` com "dot notation" para atualizar APENAS o campo de alunos da edição específica.
-                // Isso é muito mais rápido e seguro do que ler e reescrever o documento inteiro.
                 await updateDoc(docRef, {
                     [`${edition}.alunos`]: alunosAtualizados
                 });
@@ -607,9 +627,8 @@
             } catch (error) {
                 console.error("Erro ao processar arquivo de alunos:", error);
                 let errorMessage = `Erro: ${error.message}`;
-                // Mostra uma mensagem mais clara se o problema for permissão
                 if (error.code === 'permission-denied') {
-                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore no console do Firebase.';
+                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore.';
                 }
                 statusDiv.innerHTML = errorMessage;
                 statusDiv.classList.add('text-red-600');
@@ -650,7 +669,8 @@
                 }
                 
                 const docRef = doc(db, firestorePath);
-                // ✅ OTIMIZAÇÃO: Atualizamos apenas o campo de descritores para a turma e edição específicas.
+                await setDoc(docRef, {}, { merge: true });
+
                 await updateDoc(docRef, {
                     [`${edition}.descritores.${turma}`]: groupedData
                 });
@@ -663,7 +683,7 @@
                 console.error("Erro ao processar arquivo de descritores:", error);
                 let errorMessage = `Erro: ${error.message}`;
                 if (error.code === 'permission-denied') {
-                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore no console do Firebase.';
+                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore.';
                 }
                 statusDiv.innerHTML = errorMessage;
                 statusDiv.classList.add('text-red-600');
@@ -727,7 +747,6 @@
                         throw new Error(`Nenhum aluno encontrado para a turma ${turmaToDelete} nesta edição.`);
                     }
                     const alunosMantidos = alunosAtuais.filter(aluno => aluno.turma !== turmaToDelete);
-                    // ✅ OTIMIZAÇÃO: Atualiza o array de alunos, removendo os da turma selecionada.
                     await updateDoc(docRef, {
                         [`${edition}.alunos`]: alunosMantidos
                     });
@@ -735,7 +754,6 @@
                     if (!state.appData[edition]?.descritores?.[turmaToDelete]) {
                         throw new Error(`Nenhum descritor encontrado para a turma ${turmaToDelete} nesta edição.`);
                     }
-                    // ✅ OTIMIZAÇÃO: Usa `deleteField()` para remover o campo da turma do mapa de descritores.
                     await updateDoc(docRef, {
                         [`${edition}.descritores.${turmaToDelete}`]: deleteField()
                     });
@@ -750,7 +768,7 @@
                 console.error("Erro ao apagar dados:", error);
                 let errorMessage = `Erro: ${error.message}`;
                 if (error.code === 'permission-denied') {
-                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore no console do Firebase.';
+                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore.';
                 }
                 statusDiv.innerHTML = errorMessage;
                 statusDiv.classList.add('text-red-600');
@@ -766,13 +784,12 @@
             let config;
             let appId;
             
-            // Este código funciona tanto no ambiente do Gemini/Canvas quanto localmente
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                 config = JSON.parse(__firebase_config);
                 appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             } else if (typeof firebaseConfig !== 'undefined') {
                 config = firebaseConfig;
-                appId = config.projectId; // Usando o ID do projeto como fallback
+                appId = config.projectId;
             } else {
                  const el = document.getElementById('firebase-error-container');
                  if (el) el.classList.remove('hidden');
@@ -780,24 +797,32 @@
                  return false;
             }
 
-            // Define um caminho único para os dados deste aplicativo
             firestorePath = `artifacts/${appId}/public/data`;
             
             try {
                 app = initializeApp(config);
                 auth = getAuth(app);
                 db = getFirestore(app);
-                
-                // Tenta autenticar com token (ambiente Gemini) ou anonimamente (local)
+
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) {
-                    await signInWithCustomToken(auth, token);
-                } else {
-                    await signInAnonymously(auth);
+                console.log("Token encontrado:", token ? "Sim" : "Não");
+
+                // *** LÓGICA DE AUTENTICAÇÃO CORRIGIDA ***
+                try {
+                    if (token) {
+                        await signInWithCustomToken(auth, token);
+                    } else if (!auth.currentUser) {
+                        await signInAnonymously(auth);
+                    }
+                } catch (customTokenError) {
+                    console.warn("Falha ao logar com token customizado:", customTokenError.message);
+                    console.log("Tentando fallback para login anônimo...");
+                    if (!auth.currentUser) {
+                        await signInAnonymously(auth);
+                    }
                 }
                 
                 console.log("Firebase Conectado. User ID:", auth.currentUser.uid);
-                // Inicia o listener para receber dados em tempo real
                 setupFirestoreListener();
                 return true;
 
@@ -820,22 +845,24 @@
         }
 
         function setupFirestoreListener() {
-            // Limpa listeners antigos para evitar duplicação
             state.listeners.forEach(unsubscribe => unsubscribe());
             state.listeners = [];
 
             const docRef = doc(db, firestorePath);
 
-            // onSnapshot ouve as mudanças no documento em tempo real
             const unsubscribe = onSnapshot(docRef, (docSnap) => {
                 const allData = docSnap.exists() ? docSnap.data() : {};
                 
-                // Atualiza o cache local com os dados mais recentes do banco
-                state.appData.edicao1 = allData.edicao1 || { alunos: [], descritores: {} };
-                state.appData.edicao2 = allData.edicao2 || { alunos: [], descritores: {} };
-                state.appData.edicao3 = allData.edicao3 || { alunos: [], descritores: {} };
+                const mergeEditionData = (editionData) => ({
+                    alunos: [],
+                    descritores: {},
+                    ...editionData
+                });
 
-                // Redesenha a tela com os novos dados
+                state.appData.edicao1 = mergeEditionData(allData.edicao1);
+                state.appData.edicao2 = mergeEditionData(allData.edicao2);
+                state.appData.edicao3 = mergeEditionData(allData.edicao3);
+
                 updateView();
             }, (error) => {
                 console.error("Erro no listener do Firestore:", error);
@@ -892,13 +919,11 @@
         }
 
         function updateView() {
-            // Atualiza o botão da aba ativa
             tabButtonsContainer.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.tab === state.currentTab);
             });
-            tabContentContainer.innerHTML = ''; // Limpa o conteúdo antigo
+            tabContentContainer.innerHTML = ''; 
             
-            // Renderiza a view correta
             if (state.currentTab === 'telaInicial') {
                 renderTelaInicialView();
             } else {
@@ -921,7 +946,6 @@
                 `;
                 tabContentContainer.innerHTML = html;
             } else {
-                // Seleciona uma edição que tenha dados para exibir por padrão
                 let defaultEdicao = state.geralEdicao;
                 if (state.appData[defaultEdicao].alunos.length === 0) {
                     if (state.appData.edicao1.alunos.length > 0) defaultEdicao = 'edicao1';
@@ -1010,11 +1034,11 @@
             const newContent = templateClone.querySelector('.tab-pane');
             newContent.dataset.edition = tabId;
             tabContentContainer.appendChild(templateClone);
-            state.currentSubTab = 'alunos'; // Sempre volta para a sub-aba de alunos ao trocar de edição
+            state.currentSubTab = 'alunos'; 
             updateAlunosView(newContent);
             updateDescritoresView(newContent); 
             setupTabEventListeners(newContent);
-            // Ativa a primeira sub-aba
+            
             newContent.querySelector(`.sub-tab-button[data-subtab="${state.currentSubTab}"]`).classList.add('active');
             newContent.querySelector(`.sub-tab-pane[data-subtab-content="${state.currentSubTab}"]`).classList.remove('hidden');
         }
@@ -1122,7 +1146,8 @@
             const selectedTurma = tabPaneElement.querySelector('.desc-turma-selector').value;
             const selectedDisciplina = tabPaneElement.querySelector('.disciplina-selector').value;
             let data = [];
-            if (state.appData[edition].descritores[selectedTurma] && state.appData[edition].descritores[selectedTurma][selectedDisciplina]) {
+            // *** CORREÇÃO DO TypeError ***
+            if (state.appData[edition]?.descritores?.[selectedTurma]?.[selectedDisciplina]) {
                 data = state.appData[edition].descritores[selectedTurma][selectedDisciplina];
             }
             const { column, direction } = state.descritorSort;
