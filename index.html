@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – Prova Paraná 2025</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (xlsx) for Excel file parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Custom Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* New professional, soft background color */
+        }
+        .tab-button.active {
+            border-color: #007BFF;
+            color: #007BFF;
+            background-color: #e7f3ff;
+            font-weight: 600; /* Make active tab bolder */
+        }
+        .sub-tab-button.active {
+            background-color: #007BFF;
+            color: white;
+        }
+        .sortable:hover {
+            cursor: pointer;
+            background-color: #f1f1f1;
+        }
+        .sort-icon {
+            opacity: 0.5;
+            transition: opacity: 0.2s;
+        }
+        .sortable:hover .sort-icon {
+            opacity: 1;
+        }
+        .sort-icon.active {
+            opacity: 1;
+            color: #007BFF;
+        }
+        /* Custom scrollbar for tables on small screens */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Modal styles */
+        #delete-modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- ========== Login Section ========== -->
+    <div id="login-container" class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div class="bg-white p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-md">
+            <div id="firebase-error-container" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
+                <p class="font-bold">Erro de Configuração do Firebase</p>
+                <p class="text-sm">As credenciais do Firebase não foram encontradas. Se você estiver rodando o projeto localmente, siga as instruções no código para adicionar sua própria configuração do Firebase.</p>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-700 mb-6">Prova Paraná 2025</h1>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-600 mb-2 font-medium">Usuário</label>
+                    <input type="text" id="username" name="username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-600 mb-2 font-medium">Senha</label>
+                    <input type="password" id="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300">Entrar</button>
+            </form>
+            <p id="login-error" class="text-red-500 text-center mt-4 font-medium hidden">Usuário ou senha inválidos.</p>
+        </div>
+    </div>
+
+    <!-- ========== Dashboard Section ========== -->
+    <div id="dashboard-container" class="hidden min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-md sticky top-0 z-10">
+            <div class="container mx-auto px-4 py-3 flex justify-center items-center relative">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-700">Dashboard – Prova Paraná 2025</h1>
+                <button id="logout-button" class="absolute right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium">Sair</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow w-full max-w-screen-2xl mx-auto p-4 md:p-6">
+            <!-- Main Tabs -->
+            <nav class="flex justify-center mb-6 flex-wrap">
+                <button class="tab-button text-gray-600 font-medium py-3 px-6 border-b-4 border-transparent hover:bg-gray-100 transition-colors" data-tab="telaInicial">Tela Inicial</button>
+                <button class="tab-button text-gray-600 font-medium py-3 px-6 border-b-4 border-transparent hover:bg-gray-100 transition-colors" data-tab="edicao1">1ª Edição 2025</button>
+                <button class="tab-button text-gray-600 font-medium py-3 px-6 border-b-4 border-transparent hover:bg-gray-100 transition-colors" data-tab="edicao2">2ª Edição 2025</button>
+                <button class="tab-button text-gray-600 font-medium py-3 px-6 border-b-4 border-transparent hover:bg-gray-100 transition-colors" data-tab="edicao3">3ª Edição 2025</button>
+            </nav>
+
+            <!-- Tab Content Panels -->
+            <div id="tab-content">
+                <!-- Content will be dynamically populated here -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white mt-auto py-4 border-t">
+            <p class="text-center text-gray-600 text-sm">Desenvolvido por: J. Vitor Martins</p>
+        </footer>
+    </div>
+    
+    <!-- ========== Deletion Modal ========== -->
+    <div id="delete-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden opacity-0">
+        <div id="delete-modal" class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Apagar Dados da Turma</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="delete-turma-selector" class="block text-sm font-medium text-gray-700">1. Selecione a Turma</label>
+                    <select id="delete-turma-selector" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="6A">6A</option><option value="6B">6B</option><option value="7A">7A</option><option value="8A">8A</option><option value="8B">8B</option><option value="9A">9A</option><option value="9B">9B</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">2. Selecione o que apagar</label>
+                    <div class="mt-2 space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="delete-type" value="alunos" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                            <span class="ml-3 text-sm text-gray-700">Dados dos Alunos</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="delete-type" value="descritores" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                            <span class="ml-3 text-sm text-gray-700">Dados dos Descritores</span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label for="delete-password-input" class="block text-sm font-medium text-gray-700">3. Confirme com sua senha</label>
+                    <input type="password" id="delete-password-input" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="Digite a senha de login">
+                </div>
+            </div>
+            <div id="delete-status" class="mt-4 text-center text-sm"></div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="cancel-delete-button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">Cancelar</button>
+                <button id="confirm-delete-button" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-semibold">Apagar Definitivamente</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JS Template for Edition Tab Content -->
+    <template id="tab-content-template">
+        <div class="tab-pane">
+            <!-- Sub-tabs Navigation -->
+            <div class="bg-blue-50 rounded-lg p-1 flex space-x-1 mb-6 max-w-lg">
+                <button class="sub-tab-button flex-1 text-center font-medium py-2 px-4 rounded-md transition-colors" data-subtab="alunos">Análise dos Alunos</button>
+                <button class="sub-tab-button flex-1 text-center font-medium py-2 px-4 rounded-md transition-colors" data-subtab="descritores">Análise dos Descritores</button>
+                <button class="sub-tab-button flex-1 text-center font-medium py-2 px-4 rounded-md transition-colors" data-subtab="importar">Importar Dados</button>
+            </div>
+
+            <!-- Sub-tab Content Panels -->
+            <div>
+                <!-- Students Analysis -->
+                <div class="sub-tab-pane" data-subtab-content="alunos">
+                    <!-- Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
+                        <div>
+                            <label for="turma-selector" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Turma</label>
+                            <select id="turma-selector" class="turma-selector w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="6A">6A</option>
+                                <option value="6B">6B</option>
+                                <option value="7A">7A</option>
+                                <option value="8A">8A</option>
+                                <option value="8B">8B</option>
+                                <option value="9A">9A</option>
+                                <option value="9B">9B</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="aluno-search" class="block text-sm font-medium text-gray-700 mb-1">Buscar Aluno</label>
+                            <input type="text" id="aluno-search" class="aluno-search w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Digite o nome do aluno...">
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-blue-500">
+                            <h3 class="text-sm font-medium text-gray-500">Total de Alunos</h3>
+                            <p class="stat-total-alunos text-3xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-green-500">
+                            <h3 class="text-sm font-medium text-gray-500">Média Geral</h3>
+                            <p class="stat-media-geral text-3xl font-bold mt-1">0,00%</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-yellow-500">
+                            <h3 class="text-sm font-medium text-gray-500">Melhor Desempenho</h3>
+                            <p class="stat-melhor-desempenho text-3xl font-bold mt-1">0,00%</p>
+                        </div>
+                         <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-red-500">
+                            <h3 class="text-sm font-medium text-gray-500">Pior Desempenho</h3>
+                            <p class="stat-pior-desempenho text-3xl font-bold mt-1">0,00%</p>
+                        </div>
+                    </div>
+
+                    <!-- Students Table -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+                        <div class="table-container overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-600">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="nome">Aluno <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="cgm">CGM <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="individual">% Ind. <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="geral">% Geral <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="ciencias">Ciências <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="geografia">Geografia <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="historia">História <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="ingles">Inglês <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="portugues">Português <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="matematica">Matemática <span class="sort-icon">↕</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="alunos-table-body">
+                                    <tr><td colspan="10" class="text-center py-4">Nenhum dado carregado para esta turma.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Chart -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold mb-4">Média de Desempenho por Disciplina</h3>
+                        <div class="relative h-80">
+                           <canvas class="alunos-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descriptors Analysis -->
+                <div class="sub-tab-pane hidden" data-subtab-content="descritores">
+                     <!-- Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
+                        <div>
+                            <label for="desc-turma-selector" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Turma</label>
+                            <select id="desc-turma-selector" class="desc-turma-selector w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                               <option value="6A">6A</option>
+                                <option value="6B">6B</option>
+                                <option value="7A">7A</option>
+                                <option value="8A">8A</option>
+                                <option value="8B">8B</option>
+                                <option value="9A">9A</option>
+                                <option value="9B">9B</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="disciplina-selector" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Disciplina</label>
+                            <select id="disciplina-selector" class="disciplina-selector w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="ciencias">Ciências</option>
+                                <option value="geografia">Geografia</option>
+                                <option value="historia">História</option>
+                                <option value="ingles">Inglês</option>
+                                <option value="portugues">Português</option>
+                                <option value="matematica">Matemática</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Content grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Descriptors Table -->
+                        <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
+                            <div class="table-container overflow-x-auto">
+                                <table class="w-full text-sm text-left text-gray-600">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-2 py-3 sortable" data-sort="codigo">Código (Item) <span class="sort-icon">↕</span></th>
+                                            <th scope="col" class="px-2 py-3">Descrição do Descritor</th>
+                                            <th scope="col" class="px-2 py-3 sortable" data-sort="percentual_acerto">Percentual de Acerto (%) <span class="sort-icon">↕</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="descritores-table-body">
+                                       <tr><td colspan="3" class="text-center py-4">Nenhum descritor encontrado para esta seleção.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Distribution Chart -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <h3 class="text-lg font-semibold mb-4">Distribuição de Acertos</h3>
+                            <div class="relative h-80">
+                                <canvas class="descritores-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Importer -->
+                <div class="sub-tab-pane hidden" data-subtab-content="importar">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Alunos Importer -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Importar Dados dos Alunos</h3>
+                            <p class="text-gray-600 mb-6 text-sm">O arquivo deve conter colunas como: <code class="bg-gray-100 p-1 rounded">nomeAluno, cgm, percAcertosAluno...</code>.</p>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Selecione a Turma</label>
+                                    <select class="import-turma-selector-aluno w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="6A">6A</option><option value="6B">6B</option><option value="7A">7A</option><option value="8A">8A</option><option value="8B">8B</option><option value="9A">9A</option><option value="9B">9B</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Selecione o arquivo (.csv ou .xlsx)</label>
+                                    <input type="file" class="csv-file-input-aluno block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept=".csv,.xlsx">
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <button class="import-alunos-button w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300">Processar Alunos</button>
+                            </div>
+                            <div class="import-status-aluno mt-4 text-center"></div>
+                        </div>
+
+                        <!-- Descritores Importer -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Importar Dados dos Descritores</h3>
+                             <p class="text-gray-600 mb-6 text-sm">O arquivo deve conter as colunas: <code class="bg-gray-100 p-1 rounded">descritor, item, disciplina, percentualDescr</code>.</p>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Selecione a Turma</label>
+                                    <select class="import-turma-selector-desc w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="6A">6A</option><option value="6B">6B</option><option value="7A">7A</option><option value="8A">8A</option><option value="8B">8B</option><option value="9A">9A</option><option value="9B">9B</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Selecione o arquivo (.csv ou .xlsx)</label>
+                                    <input type="file" class="csv-file-input-desc block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept=".csv,.xlsx">
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <button class="import-descritores-button w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors duration-300">Processar Descritores</button>
+                            </div>
+                            <div class="import-status-desc mt-4 text-center"></div>
+                        </div>
+
+                        <!-- Delete Data -->
+                         <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-red-500">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Opção de Risco</h3>
+                             <p class="text-gray-600 mb-6 text-sm">Use esta função para apagar todos os dados de Alunos ou Descritores de uma turma específica. Esta ação não pode ser desfeita.</p>
+                            
+                            <div class="mt-6">
+                                <button class="delete-data-button w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors duration-300">Apagar Dados de uma Turma</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </template>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Global Firebase instances
+        let app, auth, db, firestorePath;
+        
+        const LOGIN_USERNAME = 'jvitormartins';
+        const LOGIN_PASSWORD = 'warta@2025';
+
+        // ========== STATE MANAGEMENT ==========
+        const state = {
+            currentTab: 'telaInicial',
+            currentSubTab: 'alunos',
+            alunoSort: { column: 'nome', direction: 'asc' },
+            descritorSort: { column: 'percentual_acerto', direction: 'desc' },
+            turmaRankSort: { column: 'geral', direction: 'desc' },
+            geralEdicao: 'edicao2', // Default edition for the home screen
+            charts: {}, // To store chart instances
+            appData: { // Local cache of Firestore data
+                edicao1: { alunos: [], descritores: {} },
+                edicao2: { alunos: [], descritores: {} },
+                edicao3: { alunos: [], descritores: {} },
+            },
+            listeners: [], // To store Firestore listeners for cleanup
+            deleteContext: { edition: null } // To store context for deletion
+        };
+
+        // ========== DOM Element Selectors ==========
+        const loginContainer = document.getElementById('login-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutButton = document.getElementById('logout-button');
+        const tabButtonsContainer = document.querySelector('nav');
+        const tabContentContainer = document.getElementById('tab-content');
+        const tabContentTemplate = document.getElementById('tab-content-template');
+        const firebaseErrorContainer = document.getElementById('firebase-error-container');
+        const deleteModalOverlay = document.getElementById('delete-modal-overlay');
+        const cancelDeleteButton = document.getElementById('cancel-delete-button');
+        const confirmDeleteButton = document.getElementById('confirm-delete-button');
+
+        // ========== HELPER FUNCTIONS ==========
+        const formatPercent = (value) => {
+            if (typeof value !== 'number' || isNaN(value)) return '0,00%';
+            return `${value.toFixed(2).replace('.', ',')}%`;
+        };
+        
+        // ========== DATA IMPORT & PARSING ==========
+       
+        function normalizeHeader(header) {
+            if (typeof header !== 'string') return '';
+            return header.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
+                .replace(/-/g, ' ') // replace hyphen with space
+                .replace(/\s+/g, ' ') // replace multiple spaces with a single one
+                .trim();
+        }
+
+        async function parseFileToJSON(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = (error) => reject(error);
+
+                if (file.name.endsWith('.csv')) {
+                    reader.onload = (event) => {
+                        try {
+                            const csvText = event.target.result;
+                            const lines = csvText.trim().split('\n');
+                            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                            const data = [];
+                            for (let i = 1; i < lines.length; i++) {
+                                if (lines[i].trim() === '') continue;
+                                const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                                let entry = {};
+                                headers.forEach((header, index) => {
+                                    entry[header] = values[index];
+                                });
+                                data.push(entry);
+                            }
+                            resolve(data);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    reader.readAsText(file, 'UTF-8');
+                } else if (file.name.endsWith('.xlsx')) {
+                    reader.onload = (event) => {
+                        try {
+                            const data = new Uint8Array(event.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const sheetName = workbook.SheetNames[0];
+                            const worksheet = workbook.Sheets[sheetName];
+                            const json = XLSX.utils.sheet_to_json(worksheet, { raw: false, defval: null });
+                            resolve(json);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    reject(new Error('Formato de arquivo não suportado. Use .csv ou .xlsx'));
+                }
+            });
+        }
+        
+        function processAlunoData(rawData) {
+            const columnMap = {
+                'nomealuno': 'nome',
+                'cgm': 'cgm',
+                'percacertosaluno': 'individual',
+                'percacertosgeral': 'geral',
+                'ciencias naturais ef': 'ciencias',
+                'geografia': 'geografia',
+                'historia': 'historia',
+                'lingua estrangeira ingles': 'ingles',
+                'lingua portuguesa': 'portugues',
+                'matematica': 'matematica'
+            };
+
+            const requiredHeaders = ['nomealuno', 'cgm'];
+
+            if (!rawData || rawData.length === 0) {
+                 throw new Error("O arquivo está vazio ou em um formato inválido.");
+            }
+
+            const fileHeaders = Object.keys(rawData[0]).map(normalizeHeader);
+            const missingHeaders = requiredHeaders.filter(rh => !fileHeaders.includes(rh));
+
+            if (missingHeaders.length > 0) {
+                throw new Error(`Arquivo inválido. Colunas obrigatórias não encontradas: ${missingHeaders.join(', ')}`);
+            }
+
+            return rawData.map(row => {
+                const newAluno = {};
+                for (const originalKey in row) {
+                    const normalizedKey = normalizeHeader(originalKey);
+                    const internalKey = columnMap[normalizedKey];
+                    if (internalKey) {
+                        let value = row[originalKey];
+                        if (internalKey !== 'nome' && internalKey !== 'cgm') {
+                            value = parseFloat(String(value).replace(',', '.')) || 0;
+                        }
+                        newAluno[internalKey] = value;
+                    }
+                }
+                return newAluno;
+            }).filter(aluno => aluno.nome && aluno.cgm); // Ensure essential data is present
+        }
+        
+        function processAndGroupDescritores(rawData) {
+            const columnMap = {
+                'descritor': 'descricao',
+                'item': 'codigo',
+                'percentualdescr': 'percentual_acerto',
+                'disciplina': 'disciplina'
+            };
+
+            const disciplineNameMap = {
+                'ciencias naturais ef': 'ciencias',
+                'geografia': 'geografia',
+                'historia': 'historia',
+                'lingua estrangeira ingles': 'ingles',
+                'lingua portuguesa': 'portugues',
+                'matematica': 'matematica'
+            };
+
+            const requiredHeaders = ['descritor', 'item', 'percentualdescr', 'disciplina'];
+            
+            if (!rawData || rawData.length === 0) {
+                throw new Error("O arquivo de descritores está vazio ou em formato inválido.");
+            }
+            const fileHeaders = Object.keys(rawData[0]).map(normalizeHeader);
+            const missingHeaders = requiredHeaders.filter(rh => !fileHeaders.includes(rh));
+            if (missingHeaders.length > 0) {
+                throw new Error(`Arquivo de descritores inválido. Colunas obrigatórias não encontradas: ${missingHeaders.join(', ')}`);
+            }
+
+            const groupedByDiscipline = {};
+
+            rawData.forEach(row => {
+                const newDescritor = {};
+                let disciplineFromFile = '';
+
+                for (const originalKey in row) {
+                    const normalizedKey = normalizeHeader(originalKey);
+                    const internalKey = columnMap[normalizedKey];
+
+                    if (internalKey) {
+                        let value = row[originalKey];
+                        if (internalKey === 'percentual_acerto') {
+                            value = parseFloat(String(value).replace(',', '.')) || 0;
+                        }
+                        newDescritor[internalKey] = value;
+
+                        if (internalKey === 'disciplina') {
+                            disciplineFromFile = normalizeHeader(value);
+                        }
+                    }
+                }
+
+                const internalDisciplineKey = disciplineNameMap[disciplineFromFile];
+
+                if (internalDisciplineKey && newDescritor.codigo && newDescritor.descricao) {
+                    if (!groupedByDiscipline[internalDisciplineKey]) {
+                        groupedByDiscipline[internalDisciplineKey] = [];
+                    }
+                    groupedByDiscipline[internalDisciplineKey].push(newDescritor);
+                }
+            });
+
+            return groupedByDiscipline;
+        }
+
+
+        async function handleAlunoFileUpload(e) {
+            const button = e.target;
+            button.disabled = true;
+            button.textContent = 'Processando...';
+            const importContainer = button.closest('.bg-white');
+            const fileInput = importContainer.querySelector('.csv-file-input-aluno');
+            const turma = importContainer.querySelector('.import-turma-selector-aluno').value;
+            const statusDiv = importContainer.querySelector('.import-status-aluno');
+            const edition = importContainer.closest('.tab-pane').dataset.edition;
+            
+            statusDiv.textContent = '';
+            statusDiv.classList.remove('text-green-600', 'text-red-600');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                statusDiv.textContent = 'Por favor, selecione um arquivo.';
+                statusDiv.classList.add('text-red-600');
+                button.disabled = false;
+                button.textContent = 'Processar Alunos';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            
+            try {
+                const rawJsonData = await parseFileToJSON(file);
+                const processedData = processAlunoData(rawJsonData);
+
+                processedData.forEach(aluno => {
+                    aluno.turma = turma;
+                });
+
+                const docRef = doc(db, firestorePath);
+                const currentDoc = await getDoc(docRef);
+                const currentData = currentDoc.exists() ? currentDoc.data() : {};
+                
+                const editionData = currentData[edition] || { alunos: [], descritores: {} };
+                const otherTurmasData = editionData.alunos.filter(a => a.turma !== turma);
+                const updatedAlunos = [...otherTurmasData, ...processedData];
+                editionData.alunos = updatedAlunos;
+
+                currentData[edition] = editionData;
+                
+                await setDoc(docRef, currentData);
+                
+                statusDiv.textContent = `Sucesso! ${processedData.length} registros da turma ${turma} foram salvos.`;
+                statusDiv.classList.add('text-green-600');
+                fileInput.value = '';
+
+            } catch (error) {
+                statusDiv.textContent = `Erro: ${error.message}`;
+                statusDiv.classList.add('text-red-600');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Processar Alunos';
+            }
+        }
+
+        async function handleDescritorFileUpload(e) {
+            const button = e.target;
+            button.disabled = true;
+            button.textContent = 'Processando...';
+            const importContainer = button.closest('.bg-white');
+            const fileInput = importContainer.querySelector('.csv-file-input-desc');
+            const turma = importContainer.querySelector('.import-turma-selector-desc').value;
+            const statusDiv = importContainer.querySelector('.import-status-desc');
+            const edition = importContainer.closest('.tab-pane').dataset.edition;
+
+            statusDiv.textContent = '';
+            statusDiv.classList.remove('text-green-600', 'text-red-600');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                statusDiv.textContent = 'Por favor, selecione um arquivo.';
+                statusDiv.classList.add('text-red-600');
+                button.disabled = false;
+                button.textContent = 'Processar Descritores';
+                return;
+            }
+
+            const file = fileInput.files[0];
+             try {
+                const rawJsonData = await parseFileToJSON(file);
+                const groupedData = processAndGroupDescritores(rawJsonData);
+                
+                if (Object.keys(groupedData).length === 0) {
+                    throw new Error(`Nenhum descritor válido encontrado no arquivo.`);
+                }
+                
+                const docRef = doc(db, firestorePath);
+                const currentDoc = await getDoc(docRef);
+                const currentData = currentDoc.exists() ? currentDoc.data() : {};
+
+                currentData[edition] = currentData[edition] || { alunos: [], descritores: {} };
+                currentData[edition].descritores = currentData[edition].descritores || {};
+                currentData[edition].descritores[turma] = groupedData;
+
+                await setDoc(docRef, currentData);
+
+                statusDiv.textContent = `Sucesso! Descritores de ${Object.keys(groupedData).length} disciplinas foram salvos para a turma ${turma}.`;
+                statusDiv.classList.add('text-green-600');
+                fileInput.value = '';
+
+            } catch (error) {
+                statusDiv.textContent = `Erro: ${error.message}`;
+                statusDiv.classList.add('text-red-600');
+            } finally {
+                 button.disabled = false;
+                 button.textContent = 'Processar Descritores';
+            }
+        }
+
+        // ========== DATA DELETION ==========
+        function openDeleteModal(e) {
+            const edition = e.target.closest('.tab-pane').dataset.edition;
+            state.deleteContext.edition = edition;
+            deleteModalOverlay.classList.remove('hidden');
+            setTimeout(() => deleteModalOverlay.classList.remove('opacity-0'), 10);
+        }
+
+        function closeDeleteModal() {
+            deleteModalOverlay.classList.add('opacity-0');
+            setTimeout(() => {
+                deleteModalOverlay.classList.add('hidden');
+                // Reset modal state
+                const radio = document.querySelector('input[name="delete-type"]:checked');
+                if(radio) radio.checked = false;
+                document.getElementById('delete-password-input').value = '';
+                document.getElementById('delete-status').textContent = '';
+            }, 300);
+        }
+
+        async function confirmDeletion() {
+            const turmaToDelete = document.getElementById('delete-turma-selector').value;
+            const deleteType = document.querySelector('input[name="delete-type"]:checked')?.value;
+            const password = document.getElementById('delete-password-input').value;
+            const statusDiv = document.getElementById('delete-status');
+
+            statusDiv.textContent = '';
+            statusDiv.classList.remove('text-red-600', 'text-green-600');
+
+            if (!deleteType) {
+                statusDiv.textContent = 'Por favor, selecione o que deseja apagar.';
+                statusDiv.classList.add('text-red-600');
+                return;
+            }
+            
+            if (password !== LOGIN_PASSWORD) {
+                statusDiv.textContent = 'Senha incorreta. A exclusão foi cancelada.';
+                statusDiv.classList.add('text-red-600');
+                document.getElementById('delete-password-input').value = '';
+                return;
+            }
+
+            confirmDeleteButton.disabled = true;
+            confirmDeleteButton.textContent = 'Apagando...';
+
+            try {
+                const docRef = doc(db, firestorePath);
+                const currentDoc = await getDoc(docRef);
+                if (!currentDoc.exists()) throw new Error("Documento de dados não encontrado.");
+                
+                const currentData = currentDoc.data();
+                const edition = state.deleteContext.edition;
+                
+                if (!currentData[edition]) throw new Error("Nenhum dado encontrado para esta edição.");
+
+                if (deleteType === 'alunos') {
+                    const originalCount = currentData[edition].alunos.length;
+                    currentData[edition].alunos = currentData[edition].alunos.filter(aluno => aluno.turma !== turmaToDelete);
+                    if(originalCount === currentData[edition].alunos.length){
+                         throw new Error(`Nenhum aluno encontrado para a turma ${turmaToDelete}.`);
+                    }
+                } else if (deleteType === 'descritores') {
+                    if (!currentData[edition].descritores || !currentData[edition].descritores[turmaToDelete]) {
+                        throw new Error(`Nenhum descritor encontrado para a turma ${turmaToDelete}.`);
+                    }
+                    delete currentData[edition].descritores[turmaToDelete];
+                }
+
+                await setDoc(docRef, currentData);
+                
+                statusDiv.textContent = `Dados de ${deleteType} da turma ${turmaToDelete} apagados com sucesso!`;
+                statusDiv.classList.add('text-green-600');
+                
+                setTimeout(closeDeleteModal, 2000);
+
+            } catch (error) {
+                statusDiv.textContent = `Erro: ${error.message}`;
+                statusDiv.classList.add('text-red-600');
+            } finally {
+                confirmDeleteButton.disabled = false;
+                confirmDeleteButton.textContent = 'Apagar Definitivamente';
+            }
+        }
+
+
+        // ========== FIREBASE & AUTHENTICATION ==========
+        
+        async function initializeFirebaseConnection() {
+            let firebaseConfig;
+            let appId;
+
+            // This code runs in a special environment (like Gemini) that provides the config
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                firebaseConfig = JSON.parse(__firebase_config);
+                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            } else {
+                // This code runs locally or on GitHub Pages
+                // Your Firebase project configuration is now hardcoded here
+                const userFirebaseConfig = {
+                    apiKey: "AIzaSyAL6OdII-3nDZONLy_aeFUs-0_v5e9MhNA",
+                    authDomain: "dashboard-prova-parana-7a2c7.firebaseapp.com",
+                    projectId: "dashboard-prova-parana-7a2c7",
+                    storageBucket: "dashboard-prova-parana-7a2c7.firebasestorage.app",
+                    messagingSenderId: "560838925413",
+                    appId: "1:560838925413:web:c19a9a5137016e918a7a8c"
+                };
+
+                firebaseConfig = userFirebaseConfig;
+                appId = firebaseConfig.projectId; // Use projectId for local dev
+            }
+            
+            // Define the single, consistent path to the data document
+            firestorePath = `artifacts/${appId}/public/data`;
+            
+            try {
+                // Initialize Firebase
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Sign in
+                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (token) {
+                    await signInWithCustomToken(auth, token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                const userId = auth.currentUser.uid;
+                console.log("Firebase Conectado. User ID:", userId);
+
+                // Setup real-time listeners
+                setupFirestoreListeners();
+
+            } catch (error) {
+                console.error("Erro ao inicializar o Firebase:", error);
+                firebaseErrorContainer.classList.remove('hidden');
+                firebaseErrorContainer.querySelector('p:last-child').textContent = `Falha na conexão: ${error.message}`;
+            }
+        }
+
+        function setupFirestoreListeners() {
+            // Detach any existing listeners before creating new ones
+            state.listeners.forEach(unsubscribe => unsubscribe());
+            state.listeners = [];
+
+            const docRef = doc(db, firestorePath);
+
+            const unsubscribe = onSnapshot(docRef, (docSnap) => {
+                const allData = docSnap.exists() ? docSnap.data() : {};
+                
+                state.appData.edicao1 = allData.edicao1 || { alunos: [], descritores: {} };
+                state.appData.edicao2 = allData.edicao2 || { alunos: [], descritores: {} };
+                state.appData.edicao3 = allData.edicao3 || { alunos: [], descritores: {} };
+
+                // Refresh the current view with new data
+                updateView();
+            }, (error) => {
+                console.error("Erro no listener do Firestore:", error);
+            });
+            state.listeners.push(unsubscribe);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = loginForm.username.value;
+            const password = loginForm.password.value;
+
+            if (username === LOGIN_USERNAME && password === LOGIN_PASSWORD) {
+                loginContainer.classList.add('hidden');
+                dashboardContainer.classList.remove('hidden');
+                loginError.classList.add('hidden');
+                loginForm.reset();
+                initializeFirebaseConnection().then(() => {
+                    initializeDashboard();
+                });
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        }
+        
+        function handleLogout() {
+            // Don't sign out from Firebase, just return to login screen UI
+            dashboardContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+        }
+
+        // ========== UI & TAB MANAGEMENT ==========
+        
+        function initializeDashboard() {
+            updateView();
+        }
+
+        function handleTabClick(e) {
+            const button = e.target.closest('.tab-button');
+            if (!button) return;
+
+            const tabId = button.dataset.tab;
+            if (tabId !== state.currentTab) {
+                state.currentTab = tabId;
+                updateView();
+            }
+        }
+
+        function updateView() {
+            tabButtonsContainer.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === state.currentTab);
+            });
+            tabContentContainer.innerHTML = '';
+            if (state.currentTab === 'telaInicial') {
+                renderTelaInicialView();
+            } else {
+                renderEdicaoView(state.currentTab);
+            }
+        }
+        
+        function renderTelaInicialView() {
+             // Check if there's any student data across all editions
+            const hasData = state.appData.edicao1.alunos.length > 0 || 
+                            state.appData.edicao2.alunos.length > 0 || 
+                            state.appData.edicao3.alunos.length > 0;
+
+            if (!hasData) {
+                // If no data, show a welcome/instruction message
+                const html = `
+                    <div class="bg-white p-8 rounded-lg shadow-sm text-center">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Bem-vindo ao Dashboard!</h2>
+                        <p class="text-gray-600 mb-6">Ainda não há dados para serem analisados na Tela Inicial.</p>
+                        <p class="text-gray-600">Para começar, por favor, vá para uma das abas de edição (ex: <strong>1ª Edição 2025</strong>) e use a sub-aba <strong>"Importar Dados"</strong> para carregar os arquivos das turmas.</p>
+                    </div>
+                `;
+                tabContentContainer.innerHTML = html;
+            } else {
+                // If there is data, find the first edition with data to be the default
+                let defaultEdicao = state.geralEdicao;
+                if (state.appData[defaultEdicao].alunos.length === 0) {
+                    if (state.appData.edicao1.alunos.length > 0) defaultEdicao = 'edicao1';
+                    else if (state.appData.edicao2.alunos.length > 0) defaultEdicao = 'edicao2';
+                    else if (state.appData.edicao3.alunos.length > 0) defaultEdicao = 'edicao3';
+                }
+                state.geralEdicao = defaultEdicao;
+
+                const html = `
+                    <div class="p-4 bg-white rounded-lg shadow-sm max-w-sm mb-6">
+                        <label for="edicao-selector-geral" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Edição para Análise Geral</label>
+                        <select id="edicao-selector-geral" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="edicao1">1ª Edição 2025</option>
+                            <option value="edicao2">2ª Edição 2025</option>
+                            <option value="edicao3">3ª Edição 2025</option>
+                        </select>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm mb-8">
+                        <h3 class="text-lg font-semibold mb-4">Análise Comparativa de Desempenho por Turma</h3>
+                        <div class="relative h-96">
+                            <canvas id="geral-turmas-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold mb-4">Ranking de Turmas</h3>
+                        <div class="table-container overflow-x-auto">
+                           <table id="turma-rank-table" class="w-full text-sm text-left text-gray-600">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="turma">Turma <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="geral">Média Geral <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="ciencias">Ciências <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="geografia">Geografia <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="historia">História <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="ingles">Inglês <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="portugues">Português <span class="sort-icon">↕</span></th>
+                                        <th scope="col" class="px-4 py-3 sortable" data-sort="matematica">Matemática <span class="sort-icon">↕</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Ranking table body will be populated here -->
+                                </tbody>
+                           </table>
+                        </div>
+                    </div>
+                `;
+                tabContentContainer.innerHTML = html;
+                const edicaoSelector = document.getElementById('edicao-selector-geral');
+                edicaoSelector.value = state.geralEdicao;
+                edicaoSelector.addEventListener('change', (e) => {
+                    state.geralEdicao = e.target.value;
+                    updateTelaInicialView();
+                });
+                
+                document.getElementById('turma-rank-table').querySelector('thead').addEventListener('click', (e) => {
+                    const th = e.target.closest('.sortable');
+                    if (!th) return;
+                    const column = th.dataset.sort;
+                    if (state.turmaRankSort.column === column) {
+                        state.turmaRankSort.direction = state.turmaRankSort.direction === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        state.turmaRankSort.column = column;
+                        state.turmaRankSort.direction = 'desc'; // Default to descending for ranks
+                    }
+                    updateTurmaRankingsView();
+                });
+
+                updateTelaInicialView();
+            }
+        }
+
+        function handleSubTabClick(e) {
+            const button = e.target.closest('.sub-tab-button');
+            if (!button) return;
+            const subTabId = button.dataset.subtab;
+            state.currentSubTab = subTabId;
+            const parentTabPane = button.closest('.tab-pane');
+            parentTabPane.querySelectorAll('.sub-tab-button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.subtab === subTabId);
+            });
+            parentTabPane.querySelectorAll('.sub-tab-pane').forEach(pane => {
+                pane.classList.toggle('hidden', pane.dataset.subtabContent !== subTabId);
+            });
+        }
+        
+        function renderEdicaoView(tabId) {
+            const templateClone = tabContentTemplate.content.cloneNode(true);
+            const newContent = templateClone.querySelector('.tab-pane');
+            newContent.dataset.edition = tabId;
+            tabContentContainer.appendChild(templateClone);
+            state.currentSubTab = 'alunos';
+            updateAlunosView(newContent);
+            updateDescritoresView(newContent); 
+            setupTabEventListeners(newContent);
+            newContent.querySelector(`.sub-tab-button[data-subtab="${state.currentSubTab}"]`).classList.add('active');
+            newContent.querySelector(`.sub-tab-pane[data-subtab-content="${state.currentSubTab}"]`).classList.remove('hidden');
+        }
+
+        function setupTabEventListeners(tabPaneElement) {
+            tabPaneElement.querySelector('.bg-blue-50').addEventListener('click', handleSubTabClick);
+            tabPaneElement.querySelector('.turma-selector').addEventListener('change', () => updateAlunosView(tabPaneElement));
+            tabPaneElement.querySelector('.aluno-search').addEventListener('input', () => updateAlunosView(tabPaneElement));
+            tabPaneElement.querySelector('[data-subtab-content="alunos"] table thead').addEventListener('click', (e) => {
+                const th = e.target.closest('.sortable');
+                if (!th) return;
+                const column = th.dataset.sort;
+                if (state.alunoSort.column === column) {
+                    state.alunoSort.direction = state.alunoSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.alunoSort.column = column;
+                    state.alunoSort.direction = 'asc';
+                }
+                updateAlunosView(tabPaneElement);
+            });
+            tabPaneElement.querySelector('.desc-turma-selector').addEventListener('change', () => updateDescritoresView(tabPaneElement));
+            tabPaneElement.querySelector('.disciplina-selector').addEventListener('change', () => updateDescritoresView(tabPaneElement));
+            tabPaneElement.querySelector('[data-subtab-content="descritores"] table thead').addEventListener('click', (e) => {
+                const th = e.target.closest('.sortable');
+                if (!th) return;
+                const column = th.dataset.sort;
+                if (state.descritorSort.column === column) {
+                    state.descritorSort.direction = state.descritorSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.descritorSort.column = column;
+                    state.descritorSort.direction = 'asc';
+                }
+                updateDescritoresView(tabPaneElement);
+            });
+            tabPaneElement.querySelector('.import-alunos-button').addEventListener('click', handleAlunoFileUpload);
+            tabPaneElement.querySelector('.import-descritores-button').addEventListener('click', handleDescritorFileUpload);
+            tabPaneElement.querySelector('.delete-data-button').addEventListener('click', openDeleteModal);
+        }
+
+        // ========== DATA RENDERING & LOGIC ==========
+        function updateTelaInicialView() {
+            updateTelaInicialChart();
+            updateTurmaRankingsView();
+        }
+
+        function updateAlunosView(tabPaneElement) {
+            const edition = tabPaneElement.dataset.edition;
+            const selectedTurma = tabPaneElement.querySelector('.turma-selector').value;
+            const searchTerm = tabPaneElement.querySelector('.aluno-search').value.toLowerCase();
+            let filteredData = state.appData[edition].alunos.filter(aluno => aluno.turma === selectedTurma);
+            if (searchTerm) {
+                filteredData = filteredData.filter(aluno => aluno.nome && aluno.nome.toLowerCase().includes(searchTerm));
+            }
+            const { column, direction } = state.alunoSort;
+            filteredData.sort((a, b) => {
+                const valA = (typeof a[column] === 'string') ? a[column].toLowerCase() : a[column];
+                const valB = (typeof b[column] === 'string') ? b[column].toLowerCase() : b[column];
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            updateStatsCards(tabPaneElement, filteredData);
+            renderAlunosTable(tabPaneElement, filteredData);
+            updateSortIcons(tabPaneElement.querySelector('[data-subtab-content="alunos"]'), state.alunoSort);
+            renderAlunosChart(tabPaneElement, filteredData);
+        }
+
+        function updateStatsCards(tabPaneElement, data) {
+            const totalAlunos = data.length;
+            const mediaGeral = totalAlunos > 0 ? data.reduce((sum, a) => sum + a.geral, 0) / totalAlunos : 0;
+            const melhorDesempenho = totalAlunos > 0 ? Math.max(...data.map(a => a.individual)) : 0;
+            const piorDesempenho = totalAlunos > 0 ? Math.min(...data.map(a => a.individual)) : 0;
+            tabPaneElement.querySelector('.stat-total-alunos').textContent = totalAlunos;
+            tabPaneElement.querySelector('.stat-media-geral').textContent = formatPercent(mediaGeral);
+            tabPaneElement.querySelector('.stat-melhor-desempenho').textContent = formatPercent(melhorDesempenho);
+            tabPaneElement.querySelector('.stat-pior-desempenho').textContent = formatPercent(piorDesempenho);
+        }
+        
+        function renderAlunosTable(tabPaneElement, data) {
+            const tableBody = tabPaneElement.querySelector('.alunos-table-body');
+            tableBody.innerHTML = ''; 
+            if(data.length === 0){
+                tableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4">Nenhum aluno encontrado. Para começar, importe um arquivo na aba 'Importar Dados'.</td></tr>`;
+                return;
+            }
+            const rows = data.map(aluno => `
+                <tr class="bg-white border-b hover:bg-gray-50 text-xs">
+                    <td class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap">${aluno.nome}</td>
+                    <td class="px-4 py-4">${aluno.cgm}</td>
+                    <td class="px-4 py-4 font-semibold">${formatPercent(aluno.individual)}</td>
+                    <td class="px-4 py-4">${formatPercent(aluno.geral)}</td>
+                    <td class="px-4 py-4">${formatPercent(aluno.ciencias)}</td>
+                    <td class="px-4 py-4">${formatPercent(aluno.geografia)}</td>
+                    <td class="px-4 py-4">${formatPercent(aluno.historia)}</td>
+                    <td class="px-4 py-4">${formatPercent(aluno.ingles)}</td>
+                    <td class="px-4 py-4">${formatPercent(aluno.portugues)}</td>
+                    <td class="px-4 py-4">${formatPercent(aluno.matematica)}</td>
+                </tr>
+            `).join('');
+            tableBody.innerHTML = rows;
+        }
+
+        function updateDescritoresView(tabPaneElement) {
+            const edition = tabPaneElement.dataset.edition;
+            const selectedTurma = tabPaneElement.querySelector('.desc-turma-selector').value;
+            const selectedDisciplina = tabPaneElement.querySelector('.disciplina-selector').value;
+            let data = [];
+            if (state.appData[edition].descritores[selectedTurma] && state.appData[edition].descritores[selectedTurma][selectedDisciplina]) {
+                data = state.appData[edition].descritores[selectedTurma][selectedDisciplina];
+            }
+            const { column, direction } = state.descritorSort;
+             data.sort((a, b) => {
+                const valA = a[column];
+                const valB = b[column];
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            renderDescritoresTable(tabPaneElement, data);
+            updateSortIcons(tabPaneElement.querySelector('[data-subtab-content="descritores"]'), state.descritorSort);
+            renderDescritoresChart(tabPaneElement, data);
+        }
+
+        function renderDescritoresTable(tabPaneElement, data) {
+            const tableBody = tabPaneElement.querySelector('.descritores-table-body');
+            tableBody.innerHTML = '';
+             if(data.length === 0){
+                tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4">Nenhum descritor encontrado. Importe um arquivo na aba 'Importar Dados'.</td></tr>`;
+                return;
+            }
+            const rows = data.map(d => `
+                 <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-2 py-4 font-medium text-gray-900">${d.codigo}</td>
+                    <td class="px-2 py-4">${d.descricao}</td>
+                    <td class="px-2 py-4 font-semibold">${formatPercent(d.percentual_acerto)}</td>
+                </tr>
+            `).join('');
+            tableBody.innerHTML = rows;
+        }
+        
+        function updateSortIcons(tableContainer, sortState) {
+            tableContainer.querySelectorAll('.sortable').forEach(th => {
+                const icon = th.querySelector('.sort-icon');
+                if (th.dataset.sort === sortState.column) {
+                    icon.classList.add('active');
+                    icon.textContent = sortState.direction === 'asc' ? '↑' : '↓';
+                } else {
+                    icon.classList.remove('active');
+                    icon.textContent = '↕';
+                }
+            });
+        }
+        
+        function calculateTurmaRankings(alunosData) {
+            const turmas = [...new Set(alunosData.map(a => a.turma))];
+            const disciplines = ['geral', 'ciencias', 'geografia', 'historia', 'ingles', 'portugues', 'matematica'];
+            
+            return turmas.map(turma => {
+                const alunosDaTurma = alunosData.filter(a => a.turma === turma);
+                const rankData = { turma: turma };
+
+                disciplines.forEach(disc => {
+                    const total = alunosDaTurma.reduce((sum, aluno) => sum + (aluno[disc] || 0), 0);
+                    rankData[disc] = alunosDaTurma.length > 0 ? total / alunosDaTurma.length : 0;
+                });
+                return rankData;
+            });
+        }
+        
+        function updateTurmaRankingsView() {
+            const table = document.getElementById('turma-rank-table');
+            if (!table) return;
+            
+            const dataEdicao = state.appData[state.geralEdicao].alunos;
+            const rankingData = calculateTurmaRankings(dataEdicao);
+
+            const { column, direction } = state.turmaRankSort;
+            rankingData.sort((a, b) => {
+                const valA = (typeof a[column] === 'string') ? a[column].toLowerCase() : a[column];
+                const valB = (typeof b[column] === 'string') ? b[column].toLowerCase() : b[column];
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            const tableBody = table.querySelector('tbody');
+            tableBody.innerHTML = '';
+            
+            if (rankingData.length === 0) {
+                 tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4">Nenhum dado de turma para classificar.</td></tr>`;
+            } else {
+                const rows = rankingData.map(turma => `
+                    <tr class="bg-white border-b hover:bg-gray-50 text-sm">
+                        <td class="px-4 py-4 font-bold text-gray-900">${turma.turma}</td>
+                        <td class="px-4 py-4 font-semibold">${formatPercent(turma.geral)}</td>
+                        <td class="px-4 py-4">${formatPercent(turma.ciencias)}</td>
+                        <td class="px-4 py-4">${formatPercent(turma.geografia)}</td>
+                        <td class="px-4 py-4">${formatPercent(turma.historia)}</td>
+                        <td class="px-4 py-4">${formatPercent(turma.ingles)}</td>
+                        <td class="px-4 py-4">${formatPercent(turma.portugues)}</td>
+                        <td class="px-4 py-4">${formatPercent(turma.matematica)}</td>
+                    </tr>
+                `).join('');
+                tableBody.innerHTML = rows;
+            }
+            updateSortIcons(table, state.turmaRankSort);
+        }
+
+        // ========== CHARTING FUNCTIONS ==========
+        function updateTelaInicialChart() {
+            const edicaoSelector = document.getElementById('edicao-selector-geral');
+            if (!edicaoSelector) return;
+            const selectedEdicao = edicaoSelector.value;
+            const dataEdicao = state.appData[selectedEdicao].alunos;
+            const turmas = [...new Set(dataEdicao.map(a => a.turma))].sort();
+            const disciplinas = {
+                ciencias: "Ciências", geografia: "Geografia", historia: "História",
+                ingles: "Inglês", portugues: "Português", matematica: "Matemática", geral: "Média Geral"
+            };
+            const colors = [
+                'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)', 'rgba(99, 110, 114, 0.7)'
+            ];
+            const datasets = Object.keys(disciplinas).map((key, index) => {
+                const data = turmas.map(turma => {
+                    const alunosDaTurma = dataEdicao.filter(a => a.turma === turma);
+                    if (alunosDaTurma.length === 0) return 0;
+                    const media = alunosDaTurma.reduce((sum, aluno) => sum + (aluno[key] || 0), 0) / alunosDaTurma.length;
+                    return media;
+                });
+                return {
+                    label: disciplinas[key], data: data, backgroundColor: colors[index % colors.length],
+                    borderColor: colors[index % colors.length].replace('0.7', '1'), borderWidth: 1
+                };
+            });
+            const ctx = document.getElementById('geral-turmas-chart')?.getContext('2d');
+            if (!ctx) return;
+            const chartId = 'geral-chart';
+            if (state.charts[chartId]) { state.charts[chartId].destroy(); }
+            state.charts[chartId] = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: turmas, datasets: datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (value) => value + '%' } } },
+                    plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (context) => `${context.dataset.label || ''}: ${formatPercent(context.parsed.y)}` } } }
+                }
+            });
+        }
+
+        function renderAlunosChart(tabPaneElement, data) {
+            const ctx = tabPaneElement.querySelector('.alunos-chart').getContext('2d');
+            const edition = tabPaneElement.dataset.edition;
+            const chartId = `${edition}-alunos`;
+            const disciplinas = ["ciencias", "geografia", "historia", "ingles", "portugues", "matematica"];
+            const labels = ["Ciências", "Geografia", "História", "Inglês", "Português", "Matemática"];
+            const chartData = labels.map((_, i) => {
+                const key = disciplinas[i];
+                if (data.length === 0) return 0;
+                return data.reduce((sum, aluno) => sum + (aluno[key] || 0), 0) / data.length;
+            });
+            if (state.charts[chartId]) { state.charts[chartId].destroy(); }
+            state.charts[chartId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Média de Desempenho (%)', data: chartData,
+                        backgroundColor: 'rgba(0, 123, 255, 0.6)', borderColor: 'rgba(0, 123, 255, 1)', borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (value) => value + '%' } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        function renderDescritoresChart(tabPaneElement, data) {
+            const ctx = tabPaneElement.querySelector('.descritores-chart').getContext('2d');
+            const edition = tabPaneElement.dataset.edition;
+            const chartId = `${edition}-descritores`;
+            const ranges = {
+                '0-25%': data.filter(d => d.percentual_acerto <= 25).length,
+                '26-50%': data.filter(d => d.percentual_acerto > 25 && d.percentual_acerto <= 50).length,
+                '51-75%': data.filter(d => d.percentual_acerto > 50 && d.percentual_acerto <= 75).length,
+                '76-100%': data.filter(d => d.percentual_acerto > 75).length,
+            };
+            if (state.charts[chartId]) { state.charts[chartId].destroy(); }
+            state.charts[chartId] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(ranges),
+                    datasets: [{
+                        label: 'Distribuição de Acertos', data: Object.values(ranges),
+                        backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(54, 162, 235, 0.7)'],
+                        borderColor: '#fff', borderWidth: 2
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        // ========== INITIALIZATION ==========
+        loginForm.addEventListener('submit', handleLogin);
+        logoutButton.addEventListener('click', handleLogout);
+        tabButtonsContainer.addEventListener('click', handleTabClick);
+        cancelDeleteButton.addEventListener('click', closeDeleteModal);
+        confirmDeleteButton.addEventListener('click', confirmDeletion);
+        deleteModalOverlay.addEventListener('click', (e) => {
+            if (e.target === deleteModalOverlay) {
+                closeDeleteModal();
+            }
+        });
+    </script>
+
+</body>
+</html>
+
