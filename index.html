@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom Styles */
+        /* Estilos Customizados */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5;
@@ -66,13 +66,13 @@
 </head>
 <body class="text-gray-800">
 
-    <!-- ========== Login Section ========== -->
+    <!-- ========== Seção de Login ========== -->
     <div id="login-container" class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div class="bg-white p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-md">
              <div id="firebase-error-container" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
-                <p class="font-bold">Erro de Configuração do Firebase</p>
-                <p class="text-sm">As credenciais do Firebase não foram encontradas ou são inválidas.</p>
-            </div>
+                 <p class="font-bold">Erro de Configuração do Firebase</p>
+                 <p class="text-sm">As credenciais do Firebase não foram encontradas ou são inválidas.</p>
+             </div>
             <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-700 mb-6">Acesso ao Dashboard</h1>
             <form id="login-form">
                 <div class="mb-6">
@@ -85,9 +85,9 @@
         </div>
     </div>
 
-    <!-- ========== Dashboard Section ========== -->
+    <!-- ========== Seção do Dashboard ========== -->
     <div id="dashboard-container" class="hidden min-h-screen flex flex-col">
-        <!-- Header -->
+        <!-- Cabeçalho -->
         <header class="bg-white shadow-md sticky top-0 z-10">
             <div class="container mx-auto px-4 py-3 flex justify-center items-center relative">
                 <h1 class="text-xl md:text-2xl font-bold text-gray-700">Dashboard – Prova Paraná 2025</h1>
@@ -95,9 +95,9 @@
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- Conteúdo Principal -->
         <main class="flex-grow w-full max-w-screen-2xl mx-auto p-4 md:p-6">
-            <!-- Main Tabs -->
+            <!-- Abas Principais -->
             <nav class="flex justify-center mb-6 flex-wrap">
                 <button class="tab-button text-gray-600 font-medium py-3 px-6 border-b-4 border-transparent hover:bg-gray-100 transition-colors" data-tab="telaInicial">Tela Inicial</button>
                 <button class="tab-button text-gray-600 font-medium py-3 px-6 border-b-4 border-transparent hover:bg-gray-100 transition-colors" data-tab="edicao1">1ª Edição 2025</button>
@@ -105,19 +105,19 @@
                 <button class="tab-button text-gray-600 font-medium py-3 px-6 border-b-4 border-transparent hover:bg-gray-100 transition-colors" data-tab="edicao3">3ª Edição 2025</button>
             </nav>
 
-            <!-- Tab Content Panels -->
+            <!-- Painéis de Conteúdo das Abas -->
             <div id="tab-content">
-                <!-- Content will be dynamically populated here -->
+                <!-- Conteúdo será populado dinamicamente aqui -->
             </div>
         </main>
 
-        <!-- Footer -->
+        <!-- Rodapé -->
         <footer class="bg-white mt-auto py-4 border-t">
             <p class="text-center text-gray-600 text-sm">Desenvolvido por: <span class="italic">J. Vitor Martins</span></p>
         </footer>
     </div>
     
-    <!-- ========== Deletion Modal ========== -->
+    <!-- ========== Modal de Exclusão ========== -->
     <div id="delete-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden opacity-0">
         <div id="delete-modal" class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Apagar Dados da Turma</h2>
@@ -155,32 +155,26 @@
     </div>
 
 
-    <!-- JS Template for Edition Tab Content -->
+    <!-- ========== Template do Conteúdo da Aba de Edição ========== -->
     <template id="tab-content-template">
         <div class="tab-pane">
-            <!-- Sub-tabs Navigation -->
+            <!-- Navegação de Sub-abas -->
             <div class="bg-blue-50 rounded-lg p-1 flex space-x-1 mb-6 max-w-lg">
                 <button class="sub-tab-button flex-1 text-center font-medium py-2 px-4 rounded-md transition-colors" data-subtab="alunos">Análise dos Alunos</button>
                 <button class="sub-tab-button flex-1 text-center font-medium py-2 px-4 rounded-md transition-colors" data-subtab="descritores">Análise dos Descritores</button>
                 <button class="sub-tab-button flex-1 text-center font-medium py-2 px-4 rounded-md transition-colors" data-subtab="importar">Importar Dados</button>
             </div>
 
-            <!-- Sub-tab Content Panels -->
+            <!-- Painéis de Conteúdo das Sub-abas -->
             <div>
-                <!-- Students Analysis -->
+                <!-- Análise de Alunos -->
                 <div class="sub-tab-pane" data-subtab-content="alunos">
-                    <!-- Controls -->
+                    <!-- Controles -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
                         <div>
                             <label for="turma-selector" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Turma</label>
                             <select id="turma-selector" class="turma-selector w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="6A">6A</option>
-                                <option value="6B">6B</option>
-                                <option value="7A">7A</option>
-                                <option value="8A">8A</option>
-                                <option value="8B">8B</option>
-                                <option value="9A">9A</option>
-                                <option value="9B">9B</option>
+                                <option value="6A">6A</option><option value="6B">6B</option><option value="7A">7A</option><option value="8A">8A</option><option value="8B">8B</option><option value="9A">9A</option><option value="9B">9B</option>
                             </select>
                         </div>
                         <div>
@@ -189,7 +183,7 @@
                         </div>
                     </div>
 
-                    <!-- Stats Cards -->
+                    <!-- Cartões de Estatísticas -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-blue-500">
                             <h3 class="text-sm font-medium text-gray-500">Total de Alunos</h3>
@@ -209,7 +203,7 @@
                         </div>
                     </div>
 
-                    <!-- Students Table -->
+                    <!-- Tabela de Alunos -->
                     <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
                         <div class="table-container overflow-x-auto">
                             <table class="w-full text-sm text-left text-gray-600">
@@ -234,7 +228,7 @@
                         </div>
                     </div>
                     
-                    <!-- Performance Chart -->
+                    <!-- Gráfico de Desempenho -->
                     <div class="bg-white p-4 rounded-lg shadow-sm">
                         <h3 class="text-lg font-semibold mb-4">Média de Desempenho por Disciplina</h3>
                         <div class="relative h-80">
@@ -243,20 +237,14 @@
                     </div>
                 </div>
 
-                <!-- Descriptors Analysis -->
+                <!-- Análise de Descritores -->
                 <div class="sub-tab-pane hidden" data-subtab-content="descritores">
-                     <!-- Controls -->
+                     <!-- Controles -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
                         <div>
                             <label for="desc-turma-selector" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Turma</label>
                             <select id="desc-turma-selector" class="desc-turma-selector w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                               <option value="6A">6A</option>
-                                <option value="6B">6B</option>
-                                <option value="7A">7A</option>
-                                <option value="8A">8A</option>
-                                <option value="8B">8B</option>
-                                <option value="9A">9A</option>
-                                <option value="9B">9B</option>
+                               <option value="6A">6A</option><option value="6B">6B</option><option value="7A">7A</option><option value="8A">8A</option><option value="8B">8B</option><option value="9A">9A</option><option value="9B">9B</option>
                             </select>
                         </div>
                         <div>
@@ -272,9 +260,9 @@
                         </div>
                     </div>
                     
-                    <!-- Content grid -->
+                    <!-- Grid de Conteúdo -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Descriptors Table -->
+                        <!-- Tabela de Descritores -->
                         <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
                             <div class="table-container overflow-x-auto">
                                 <table class="w-full text-sm text-left text-gray-600">
@@ -291,7 +279,7 @@
                                 </table>
                             </div>
                         </div>
-                        <!-- Distribution Chart -->
+                        <!-- Gráfico de Distribuição -->
                         <div class="bg-white p-4 rounded-lg shadow-sm">
                             <h3 class="text-lg font-semibold mb-4">Distribuição de Acertos</h3>
                             <div class="relative h-80">
@@ -301,10 +289,10 @@
                     </div>
                 </div>
 
-                <!-- Data Importer -->
+                <!-- Importador de Dados -->
                 <div class="sub-tab-pane hidden" data-subtab-content="importar">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <!-- Alunos Importer -->
+                        <!-- Importador de Alunos -->
                         <div class="bg-white p-6 rounded-lg shadow-sm">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">Importar Dados dos Alunos</h3>
                             <p class="text-gray-600 mb-6 text-sm">O arquivo deve conter colunas como: <code class="bg-gray-100 p-1 rounded">nomeAluno, cgm, percAcertosAluno...</code>.</p>
@@ -328,7 +316,7 @@
                             <div class="import-status-aluno mt-4 text-center"></div>
                         </div>
 
-                        <!-- Descritores Importer -->
+                        <!-- Importador de Descritores -->
                         <div class="bg-white p-6 rounded-lg shadow-sm">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">Importar Dados dos Descritores</h3>
                              <p class="text-gray-600 mb-6 text-sm">O arquivo deve conter as colunas: <code class="bg-gray-100 p-1 rounded">descritor, item, disciplina, percentualDescr</code>.</p>
@@ -352,7 +340,7 @@
                             <div class="import-status-desc mt-4 text-center"></div>
                         </div>
 
-                        <!-- Delete Data -->
+                        <!-- Apagar Dados -->
                          <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-red-500">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">Opção de Risco</h3>
                              <p class="text-gray-600 mb-6 text-sm">Use esta função para apagar todos os dados de Alunos ou Descritores de uma turma específica. Esta ação não pode ser desfeita.</p>
@@ -361,16 +349,20 @@
                                 <button class="delete-data-button w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors duration-300">Apagar Dados de uma Turma</button>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     </template>
     
-    <!-- Firebase SDK -->
+    <!-- ========== SDK do Firebase e Lógica do Aplicativo ========== -->
     <script type="module">
+        // Importações dos módulos do Firebase - Adicionamos updateDoc e deleteField para otimizações
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, setDoc, getDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Mantenha suas credenciais aqui. Elas são seguras para serem expostas no cliente.
         const firebaseConfig = {
             apiKey: "AIzaSyAL6OdII-3nDZONLy_aeFUs-0_v5e9MhNA",
             authDomain: "dashboard-prova-parana-7a2c7.firebaseapp.com",
@@ -380,35 +372,30 @@
             appId: "1:560838925413:web:c19a9a5137016e918a7a8c"
         };
         
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        // Global Firebase instances
+        // Variáveis globais do Firebase
         let app, auth, db, firestorePath;
         
         const LOGIN_PASSWORD = 'warta@2025';
 
-        // ========== STATE MANAGEMENT ==========
+        // ========== Gerenciamento de Estado ==========
         const state = {
             currentTab: 'telaInicial',
             currentSubTab: 'alunos',
             alunoSort: { column: 'nome', direction: 'asc' },
             descritorSort: { column: 'percentual_acerto', direction: 'desc' },
             turmaRankSort: { column: 'geral', direction: 'desc' },
-            geralEdicao: 'edicao2', // Default edition for the home screen
-            charts: {}, // To store chart instances
-            appData: { // Local cache of Firestore data
+            geralEdicao: 'edicao2', // Edição padrão para a tela inicial
+            charts: {}, // Armazena instâncias de gráficos para destruí-las depois
+            appData: { // Cache local dos dados do Firestore
                 edicao1: { alunos: [], descritores: {} },
                 edicao2: { alunos: [], descritores: {} },
                 edicao3: { alunos: [], descritores: {} },
             },
-            listeners: [], // To store Firestore listeners for cleanup
-            deleteContext: { edition: null } // To store context for deletion
+            listeners: [], // Armazena listeners do Firestore para limpeza
+            deleteContext: { edition: null } // Contexto para a exclusão de dados
         };
 
-        // ========== DOM Element Selectors ==========
+        // ========== Seletores de Elementos DOM ==========
         const loginContainer = document.getElementById('login-container');
         const dashboardContainer = document.getElementById('dashboard-container');
         const loginForm = document.getElementById('login-form');
@@ -422,20 +409,20 @@
         const cancelDeleteButton = document.getElementById('cancel-delete-button');
         const confirmDeleteButton = document.getElementById('confirm-delete-button');
 
-        // ========== HELPER FUNCTIONS ==========
+        // ========== Funções Utilitárias ==========
         const formatPercent = (value) => {
             if (typeof value !== 'number' || isNaN(value)) return '0,00%';
             return `${value.toFixed(2).replace('.', ',')}%`;
         };
         
-        // ========== DATA IMPORT & PARSING ==========
-       
+        // ========== IMPORTAÇÃO E PARSING DE DADOS ==========
+        
         function normalizeHeader(header) {
             if (typeof header !== 'string') return '';
             return header.toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
-                .replace(/-/g, ' ') // replace hyphen with space
-                .replace(/\s+/g, ' ') // replace multiple spaces with a single one
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove acentos
+                .replace(/-/g, ' ') // substitui hífen por espaço
+                .replace(/\s+/g, ' ') // remove espaços múltiplos
                 .trim();
         }
 
@@ -488,27 +475,18 @@
         
         function processAlunoData(rawData) {
             const columnMap = {
-                'nomealuno': 'nome',
-                'cgm': 'cgm',
-                'percacertosaluno': 'individual',
-                'percacertosgeral': 'geral',
-                'ciencias naturais ef': 'ciencias',
-                'geografia': 'geografia',
-                'historia': 'historia',
-                'lingua estrangeira ingles': 'ingles',
-                'lingua portuguesa': 'portugues',
-                'matematica': 'matematica'
+                'nomealuno': 'nome', 'cgm': 'cgm', 'percacertosaluno': 'individual',
+                'percacertosgeral': 'geral', 'ciencias naturais ef': 'ciencias',
+                'geografia': 'geografia', 'historia': 'historia', 'lingua estrangeira ingles': 'ingles',
+                'lingua portuguesa': 'portugues', 'matematica': 'matematica'
             };
-
             const requiredHeaders = ['nomealuno', 'cgm'];
 
             if (!rawData || rawData.length === 0) {
                  throw new Error("O arquivo está vazio ou em um formato inválido.");
             }
-
             const fileHeaders = Object.keys(rawData[0]).map(normalizeHeader);
             const missingHeaders = requiredHeaders.filter(rh => !fileHeaders.includes(rh));
-
             if (missingHeaders.length > 0) {
                 throw new Error(`Arquivo inválido. Colunas obrigatórias não encontradas: ${missingHeaders.join(', ')}`);
             }
@@ -527,26 +505,18 @@
                     }
                 }
                 return newAluno;
-            }).filter(aluno => aluno.nome && aluno.cgm); // Ensure essential data is present
+            }).filter(aluno => aluno.nome && aluno.cgm);
         }
         
         function processAndGroupDescritores(rawData) {
             const columnMap = {
-                'descritor': 'descricao',
-                'item': 'codigo',
-                'percentualdescr': 'percentual_acerto',
-                'disciplina': 'disciplina'
+                'descritor': 'descricao', 'item': 'codigo',
+                'percentualdescr': 'percentual_acerto', 'disciplina': 'disciplina'
             };
-
             const disciplineNameMap = {
-                'ciencias naturais ef': 'ciencias',
-                'geografia': 'geografia',
-                'historia': 'historia',
-                'lingua estrangeira ingles': 'ingles',
-                'lingua portuguesa': 'portugues',
-                'matematica': 'matematica'
+                'ciencias naturais ef': 'ciencias', 'geografia': 'geografia', 'historia': 'historia',
+                'lingua estrangeira ingles': 'ingles', 'lingua portuguesa': 'portugues', 'matematica': 'matematica'
             };
-
             const requiredHeaders = ['descritor', 'item', 'percentualdescr', 'disciplina'];
             
             if (!rawData || rawData.length === 0) {
@@ -559,7 +529,6 @@
             }
 
             const groupedByDiscipline = {};
-
             rawData.forEach(row => {
                 const newDescritor = {};
                 let disciplineFromFile = '';
@@ -567,22 +536,18 @@
                 for (const originalKey in row) {
                     const normalizedKey = normalizeHeader(originalKey);
                     const internalKey = columnMap[normalizedKey];
-
                     if (internalKey) {
                         let value = row[originalKey];
                         if (internalKey === 'percentual_acerto') {
                             value = parseFloat(String(value).replace(',', '.')) || 0;
                         }
                         newDescritor[internalKey] = value;
-
                         if (internalKey === 'disciplina') {
                             disciplineFromFile = normalizeHeader(value);
                         }
                     }
                 }
-
                 const internalDisciplineKey = disciplineNameMap[disciplineFromFile];
-
                 if (internalDisciplineKey && newDescritor.codigo && newDescritor.descricao) {
                     if (!groupedByDiscipline[internalDisciplineKey]) {
                         groupedByDiscipline[internalDisciplineKey] = [];
@@ -590,7 +555,6 @@
                     groupedByDiscipline[internalDisciplineKey].push(newDescritor);
                 }
             });
-
             return groupedByDiscipline;
         }
 
@@ -605,7 +569,7 @@
             const statusDiv = importContainer.querySelector('.import-status-aluno');
             const edition = importContainer.closest('.tab-pane').dataset.edition;
             
-            statusDiv.textContent = '';
+            statusDiv.innerHTML = '';
             statusDiv.classList.remove('text-green-600', 'text-red-600');
 
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -621,30 +585,33 @@
             try {
                 const rawJsonData = await parseFileToJSON(file);
                 const processedData = processAlunoData(rawJsonData);
+                processedData.forEach(aluno => { aluno.turma = turma; });
 
-                processedData.forEach(aluno => {
-                    aluno.turma = turma;
-                });
+                // ✅ OTIMIZAÇÃO: Esta é a forma correta de atualizar dados.
+                // Usamos o cache local (state.appData) para montar o novo array de alunos.
+                const alunosAtuais = state.appData[edition]?.alunos || [];
+                const alunosDeOutrasTurmas = alunosAtuais.filter(a => a.turma !== turma);
+                const alunosAtualizados = [...alunosDeOutrasTurmas, ...processedData];
 
                 const docRef = doc(db, firestorePath);
-                const currentDoc = await getDoc(docRef);
-                const currentData = currentDoc.exists() ? currentDoc.data() : {};
-                
-                const editionData = currentData[edition] || { alunos: [], descritores: {} };
-                const otherTurmasData = editionData.alunos.filter(a => a.turma !== turma);
-                const updatedAlunos = [...otherTurmasData, ...processedData];
-                editionData.alunos = updatedAlunos;
-
-                currentData[edition] = editionData;
-                
-                await setDoc(docRef, currentData);
+                // Usamos `updateDoc` com "dot notation" para atualizar APENAS o campo de alunos da edição específica.
+                // Isso é muito mais rápido e seguro do que ler e reescrever o documento inteiro.
+                await updateDoc(docRef, {
+                    [`${edition}.alunos`]: alunosAtualizados
+                });
                 
                 statusDiv.textContent = `Sucesso! ${processedData.length} registros da turma ${turma} foram salvos.`;
                 statusDiv.classList.add('text-green-600');
                 fileInput.value = '';
 
             } catch (error) {
-                statusDiv.textContent = `Erro: ${error.message}`;
+                console.error("Erro ao processar arquivo de alunos:", error);
+                let errorMessage = `Erro: ${error.message}`;
+                // Mostra uma mensagem mais clara se o problema for permissão
+                if (error.code === 'permission-denied') {
+                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore no console do Firebase.';
+                }
+                statusDiv.innerHTML = errorMessage;
                 statusDiv.classList.add('text-red-600');
             } finally {
                 button.disabled = false;
@@ -662,7 +629,7 @@
             const statusDiv = importContainer.querySelector('.import-status-desc');
             const edition = importContainer.closest('.tab-pane').dataset.edition;
 
-            statusDiv.textContent = '';
+            statusDiv.innerHTML = '';
             statusDiv.classList.remove('text-green-600', 'text-red-600');
 
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -674,7 +641,7 @@
             }
 
             const file = fileInput.files[0];
-             try {
+            try {
                 const rawJsonData = await parseFileToJSON(file);
                 const groupedData = processAndGroupDescritores(rawJsonData);
                 
@@ -683,29 +650,30 @@
                 }
                 
                 const docRef = doc(db, firestorePath);
-                const currentDoc = await getDoc(docRef);
-                const currentData = currentDoc.exists() ? currentDoc.data() : {};
+                // ✅ OTIMIZAÇÃO: Atualizamos apenas o campo de descritores para a turma e edição específicas.
+                await updateDoc(docRef, {
+                    [`${edition}.descritores.${turma}`]: groupedData
+                });
 
-                currentData[edition] = currentData[edition] || { alunos: [], descritores: {} };
-                currentData[edition].descritores = currentData[edition].descritores || {};
-                currentData[edition].descritores[turma] = groupedData;
-
-                await setDoc(docRef, currentData);
-
-                statusDiv.textContent = `Sucesso! Descritores de ${Object.keys(groupedData).length} disciplinas foram salvos para a turma ${turma}.`;
+                statusDiv.textContent = `Sucesso! Descritores de ${Object.keys(groupedData).length} disciplinas salvos para a turma ${turma}.`;
                 statusDiv.classList.add('text-green-600');
                 fileInput.value = '';
 
             } catch (error) {
-                statusDiv.textContent = `Erro: ${error.message}`;
+                console.error("Erro ao processar arquivo de descritores:", error);
+                let errorMessage = `Erro: ${error.message}`;
+                if (error.code === 'permission-denied') {
+                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore no console do Firebase.';
+                }
+                statusDiv.innerHTML = errorMessage;
                 statusDiv.classList.add('text-red-600');
             } finally {
-                 button.disabled = false;
-                 button.textContent = 'Processar Descritores';
+                button.disabled = false;
+                button.textContent = 'Processar Descritores';
             }
         }
 
-        // ========== DATA DELETION ==========
+        // ========== EXCLUSÃO DE DADOS ==========
         function openDeleteModal(e) {
             const edition = e.target.closest('.tab-pane').dataset.edition;
             state.deleteContext.edition = edition;
@@ -717,7 +685,6 @@
             deleteModalOverlay.classList.add('opacity-0');
             setTimeout(() => {
                 deleteModalOverlay.classList.add('hidden');
-                // Reset modal state
                 const radio = document.querySelector('input[name="delete-type"]:checked');
                 if(radio) radio.checked = false;
                 document.getElementById('delete-password-input').value = '';
@@ -731,7 +698,7 @@
             const password = document.getElementById('delete-password-input').value;
             const statusDiv = document.getElementById('delete-status');
 
-            statusDiv.textContent = '';
+            statusDiv.innerHTML = '';
             statusDiv.classList.remove('text-red-600', 'text-green-600');
 
             if (!deleteType) {
@@ -752,36 +719,40 @@
 
             try {
                 const docRef = doc(db, firestorePath);
-                const currentDoc = await getDoc(docRef);
-                if (!currentDoc.exists()) throw new Error("Documento de dados não encontrado.");
-                
-                const currentData = currentDoc.data();
                 const edition = state.deleteContext.edition;
                 
-                if (!currentData[edition]) throw new Error("Nenhum dado encontrado para esta edição.");
-
                 if (deleteType === 'alunos') {
-                    const originalCount = currentData[edition].alunos.length;
-                    currentData[edition].alunos = currentData[edition].alunos.filter(aluno => aluno.turma !== turmaToDelete);
-                    if(originalCount === currentData[edition].alunos.length){
-                         throw new Error(`Nenhum aluno encontrado para a turma ${turmaToDelete}.`);
+                    const alunosAtuais = state.appData[edition]?.alunos || [];
+                    if (!alunosAtuais.some(a => a.turma === turmaToDelete)) {
+                        throw new Error(`Nenhum aluno encontrado para a turma ${turmaToDelete} nesta edição.`);
                     }
+                    const alunosMantidos = alunosAtuais.filter(aluno => aluno.turma !== turmaToDelete);
+                    // ✅ OTIMIZAÇÃO: Atualiza o array de alunos, removendo os da turma selecionada.
+                    await updateDoc(docRef, {
+                        [`${edition}.alunos`]: alunosMantidos
+                    });
                 } else if (deleteType === 'descritores') {
-                    if (!currentData[edition].descritores || !currentData[edition].descritores[turmaToDelete]) {
-                        throw new Error(`Nenhum descritor encontrado para a turma ${turmaToDelete}.`);
+                    if (!state.appData[edition]?.descritores?.[turmaToDelete]) {
+                        throw new Error(`Nenhum descritor encontrado para a turma ${turmaToDelete} nesta edição.`);
                     }
-                    delete currentData[edition].descritores[turmaToDelete];
+                    // ✅ OTIMIZAÇÃO: Usa `deleteField()` para remover o campo da turma do mapa de descritores.
+                    await updateDoc(docRef, {
+                        [`${edition}.descritores.${turmaToDelete}`]: deleteField()
+                    });
                 }
 
-                await setDoc(docRef, currentData);
-                
                 statusDiv.textContent = `Dados de ${deleteType} da turma ${turmaToDelete} apagados com sucesso!`;
                 statusDiv.classList.add('text-green-600');
                 
                 setTimeout(closeDeleteModal, 2000);
 
             } catch (error) {
-                statusDiv.textContent = `Erro: ${error.message}`;
+                console.error("Erro ao apagar dados:", error);
+                let errorMessage = `Erro: ${error.message}`;
+                if (error.code === 'permission-denied') {
+                    errorMessage = '<b>Erro de Permissão.</b> Verifique as regras de segurança do Firestore no console do Firebase.';
+                }
+                statusDiv.innerHTML = errorMessage;
                 statusDiv.classList.add('text-red-600');
             } finally {
                 confirmDeleteButton.disabled = false;
@@ -789,27 +760,27 @@
             }
         }
 
-
-        // ========== FIREBASE & AUTHENTICATION ==========
+        // ========== FIREBASE E AUTENTICAÇÃO ==========
         
         async function initializeFirebaseConnection() {
             let config;
             let appId;
             
-            // This code works in both Gemini/Canvas environment and local/GitHub Pages
+            // Este código funciona tanto no ambiente do Gemini/Canvas quanto localmente
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                 config = JSON.parse(__firebase_config);
                 appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             } else if (typeof firebaseConfig !== 'undefined') {
                 config = firebaseConfig;
-                appId = config.projectId;
+                appId = config.projectId; // Usando o ID do projeto como fallback
             } else {
                  const el = document.getElementById('firebase-error-container');
                  if (el) el.classList.remove('hidden');
-                 console.error("Firebase config not found anywhere.");
+                 console.error("Configuração do Firebase não encontrada.");
                  return false;
             }
 
+            // Define um caminho único para os dados deste aplicativo
             firestorePath = `artifacts/${appId}/public/data`;
             
             try {
@@ -817,6 +788,7 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
                 
+                // Tenta autenticar com token (ambiente Gemini) ou anonimamente (local)
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                 if (token) {
                     await signInWithCustomToken(auth, token);
@@ -825,7 +797,8 @@
                 }
                 
                 console.log("Firebase Conectado. User ID:", auth.currentUser.uid);
-                setupFirestoreListeners();
+                // Inicia o listener para receber dados em tempo real
+                setupFirestoreListener();
                 return true;
 
             } catch (error) {
@@ -839,29 +812,36 @@
                     if (p) p.textContent = `Detalhes: ${error.message}`;
                 }
                 if (errEl) {
-                    errEl.textContent = `Falha na conexão com o DB. Verifique as restrições da chave de API.`;
+                    errEl.textContent = `Falha na conexão com o DB. Verifique o console.`;
                     errEl.classList.remove('hidden');
                 }
                 return false;
             }
         }
 
-        function setupFirestoreListeners() {
+        function setupFirestoreListener() {
+            // Limpa listeners antigos para evitar duplicação
             state.listeners.forEach(unsubscribe => unsubscribe());
             state.listeners = [];
 
             const docRef = doc(db, firestorePath);
 
+            // onSnapshot ouve as mudanças no documento em tempo real
             const unsubscribe = onSnapshot(docRef, (docSnap) => {
                 const allData = docSnap.exists() ? docSnap.data() : {};
                 
+                // Atualiza o cache local com os dados mais recentes do banco
                 state.appData.edicao1 = allData.edicao1 || { alunos: [], descritores: {} };
                 state.appData.edicao2 = allData.edicao2 || { alunos: [], descritores: {} };
                 state.appData.edicao3 = allData.edicao3 || { alunos: [], descritores: {} };
 
+                // Redesenha a tela com os novos dados
                 updateView();
             }, (error) => {
                 console.error("Erro no listener do Firestore:", error);
+                 const errEl = document.getElementById('login-error');
+                 errEl.textContent = `Erro ao receber dados: ${error.message}`;
+                 errEl.classList.remove('hidden');
             });
             state.listeners.push(unsubscribe);
         }
@@ -871,7 +851,7 @@
             const password = loginForm.password.value;
 
             if (password === LOGIN_PASSWORD) {
-                const connected = await initializeFirebaseConnection(); // Await the result
+                const connected = await initializeFirebaseConnection();
                 if (connected) {
                     loginContainer.classList.add('hidden');
                     dashboardContainer.classList.remove('hidden');
@@ -880,7 +860,7 @@
                     initializeDashboard();
                 } else {
                     console.error("Login abortado devido a falha na conexão com o Firebase.");
-                    loginError.textContent = "Falha ao conectar com o banco de dados. Verifique o console para detalhes.";
+                    loginError.textContent = "Falha ao conectar com o banco de dados. Verifique o console.";
                     loginError.classList.remove('hidden');
                 }
             } else {
@@ -894,7 +874,7 @@
             loginContainer.classList.remove('hidden');
         }
 
-        // ========== UI & TAB MANAGEMENT ==========
+        // ========== UI E GERENCIAMENTO DE ABAS ==========
         
         function initializeDashboard() {
             updateView();
@@ -912,10 +892,13 @@
         }
 
         function updateView() {
+            // Atualiza o botão da aba ativa
             tabButtonsContainer.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.tab === state.currentTab);
             });
-            tabContentContainer.innerHTML = '';
+            tabContentContainer.innerHTML = ''; // Limpa o conteúdo antigo
+            
+            // Renderiza a view correta
             if (state.currentTab === 'telaInicial') {
                 renderTelaInicialView();
             } else {
@@ -938,6 +921,7 @@
                 `;
                 tabContentContainer.innerHTML = html;
             } else {
+                // Seleciona uma edição que tenha dados para exibir por padrão
                 let defaultEdicao = state.geralEdicao;
                 if (state.appData[defaultEdicao].alunos.length === 0) {
                     if (state.appData.edicao1.alunos.length > 0) defaultEdicao = 'edicao1';
@@ -977,9 +961,7 @@
                                         <th scope="col" class="px-4 py-3 sortable" data-sort="matematica">Matemática <span class="sort-icon">↕</span></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <!-- Ranking table body will be populated here -->
-                                </tbody>
+                                <tbody></tbody>
                            </table>
                         </div>
                     </div>
@@ -1028,10 +1010,11 @@
             const newContent = templateClone.querySelector('.tab-pane');
             newContent.dataset.edition = tabId;
             tabContentContainer.appendChild(templateClone);
-            state.currentSubTab = 'alunos';
+            state.currentSubTab = 'alunos'; // Sempre volta para a sub-aba de alunos ao trocar de edição
             updateAlunosView(newContent);
             updateDescritoresView(newContent); 
             setupTabEventListeners(newContent);
+            // Ativa a primeira sub-aba
             newContent.querySelector(`.sub-tab-button[data-subtab="${state.currentSubTab}"]`).classList.add('active');
             newContent.querySelector(`.sub-tab-pane[data-subtab-content="${state.currentSubTab}"]`).classList.remove('hidden');
         }
@@ -1071,7 +1054,7 @@
             tabPaneElement.querySelector('.delete-data-button').addEventListener('click', openDeleteModal);
         }
 
-        // ========== DATA RENDERING & LOGIC ==========
+        // ========== RENDERIZAÇÃO DE DADOS E LÓGICA ==========
         function updateTelaInicialView() {
             updateTelaInicialChart();
             updateTurmaRankingsView();
@@ -1164,9 +1147,9 @@
             }
             const rows = data.map(d => `
                  <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-2 py-4 font-medium text-gray-900">${d.codigo}</td>
-                    <td class="px-2 py-4">${d.descricao}</td>
-                    <td class="px-2 py-4 font-semibold">${formatPercent(d.percentual_acerto)}</td>
+                     <td class="px-2 py-4 font-medium text-gray-900">${d.codigo}</td>
+                     <td class="px-2 py-4">${d.descricao}</td>
+                     <td class="px-2 py-4 font-semibold">${formatPercent(d.percentual_acerto)}</td>
                 </tr>
             `).join('');
             tableBody.innerHTML = rows;
@@ -1192,7 +1175,6 @@
             return turmas.map(turma => {
                 const alunosDaTurma = alunosData.filter(a => a.turma === turma);
                 const rankData = { turma: turma };
-
                 disciplines.forEach(disc => {
                     const total = alunosDaTurma.reduce((sum, aluno) => sum + (aluno[disc] || 0), 0);
                     rankData[disc] = alunosDaTurma.length > 0 ? total / alunosDaTurma.length : 0;
@@ -1240,7 +1222,7 @@
             updateSortIcons(table, state.turmaRankSort);
         }
 
-        // ========== CHARTING FUNCTIONS ==========
+        // ========== FUNÇÕES DOS GRÁFICOS ==========
         function updateTelaInicialChart() {
             const edicaoSelector = document.getElementById('edicao-selector-geral');
             if (!edicaoSelector) return;
@@ -1336,7 +1318,7 @@
             });
         }
 
-        // ========== INITIALIZATION ==========
+        // ========== INICIALIZAÇÃO E EVENT LISTENERS GLOBAIS ==========
         loginForm.addEventListener('submit', handleLogin);
         logoutButton.addEventListener('click', handleLogout);
         tabButtonsContainer.addEventListener('click', handleTabClick);
@@ -1351,4 +1333,3 @@
 
 </body>
 </html>
-
