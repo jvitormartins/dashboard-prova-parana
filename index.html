@@ -1196,13 +1196,30 @@
         function calculateTurmaRankings(alunosData) {
             const turmas = [...new Set(alunosData.map(a => a.turma))];
             const disciplines = ['geral', 'ciencias', 'geografia', 'historia', 'ingles', 'portugues', 'matematica'];
-            
+            const coreSubjects = ['ciencias', 'geografia', 'historia', 'ingles', 'portugues', 'matematica'];
+
             return turmas.map(turma => {
                 const alunosDaTurma = alunosData.filter(a => a.turma === turma);
                 const rankData = { turma: turma };
+
                 disciplines.forEach(disc => {
-                    const total = alunosDaTurma.reduce((sum, aluno) => sum + (aluno[disc] || 0), 0);
-                    rankData[disc] = alunosDaTurma.length > 0 ? total / alunosDaTurma.length : 0;
+                    if (disc === 'geral') {
+                        // Calcular média geral como média das 6 disciplinas principais
+                        const mediasDisciplinas = [];
+                        alunosDaTurma.forEach(aluno => {
+                            const disciplinasAluno = coreSubjects.map(subj => aluno[subj]).filter(val => val !== null && val !== undefined && !isNaN(val));
+                            if (disciplinasAluno.length > 0) {
+                                const mediaAluno = disciplinasAluno.reduce((sum, val) => sum + val, 0) / disciplinasAluno.length;
+                                mediasDisciplinas.push(mediaAluno);
+                            }
+                        });
+                        rankData[disc] = mediasDisciplinas.length > 0 ? 
+                            mediasDisciplinas.reduce((sum, val) => sum + val, 0) / mediasDisciplinas.length : 0;
+                    } else {
+                        // Calcular média normal para as outras disciplinas
+                        const total = alunosDaTurma.reduce((sum, aluno) => sum + (aluno[disc] || 0), 0);
+                        rankData[disc] = alunosDaTurma.length > 0 ? total / alunosDaTurma.length : 0;
+                    }
                 });
                 return rankData;
             });
@@ -1258,22 +1275,42 @@
                 ciencias: "Ciências", geografia: "Geografia", historia: "História",
                 ingles: "Inglês", portugues: "Português", matematica: "Matemática", geral: "Média Geral"
             };
+            const coreSubjects = ['ciencias', 'geografia', 'historia', 'ingles', 'portugues', 'matematica'];
+
             const colors = [
                 'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
                 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)', 'rgba(99, 110, 114, 0.7)'
             ];
+
             const datasets = Object.keys(disciplinas).map((key, index) => {
                 const data = turmas.map(turma => {
                     const alunosDaTurma = dataEdicao.filter(a => a.turma === turma);
                     if (alunosDaTurma.length === 0) return 0;
-                    const media = alunosDaTurma.reduce((sum, aluno) => sum + (aluno[key] || 0), 0) / alunosDaTurma.length;
-                    return media;
+
+                    if (key === 'geral') {
+                        // Calcular média geral como média das 6 disciplinas principais
+                        const mediasDisciplinas = [];
+                        alunosDaTurma.forEach(aluno => {
+                            const disciplinasAluno = coreSubjects.map(subj => aluno[subj]).filter(val => val !== null && val !== undefined && !isNaN(val));
+                            if (disciplinasAluno.length > 0) {
+                                const mediaAluno = disciplinasAluno.reduce((sum, val) => sum + val, 0) / disciplinasAluno.length;
+                                mediasDisciplinas.push(mediaAluno);
+                            }
+                        });
+                        return mediasDisciplinas.length > 0 ? 
+                            mediasDisciplinas.reduce((sum, val) => sum + val, 0) / mediasDisciplinas.length : 0;
+                    } else {
+                        // Calcular média normal para as outras disciplinas
+                        const media = alunosDaTurma.reduce((sum, aluno) => sum + (aluno[key] || 0), 0) / alunosDaTurma.length;
+                        return media;
+                    }
                 });
                 return {
                     label: disciplinas[key], data: data, backgroundColor: colors[index % colors.length],
                     borderColor: colors[index % colors.length].replace('0.7', '1'), borderWidth: 1
                 };
             });
+
             const ctx = document.getElementById('geral-turmas-chart')?.getContext('2d');
             if (!ctx) return;
             const chartId = 'geral-chart';
